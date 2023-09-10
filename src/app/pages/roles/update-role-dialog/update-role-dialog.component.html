@@ -1,0 +1,43 @@
+
+<form [formGroup]="roleForm" *ngIf="loaded" (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>
+    <h3>Изменить роль</h3>
+    <mat-form-field class="w-100">
+      <mat-label>Название</mat-label>
+      <input matInput formControlName="visible_name" placeholder="" required>
+      <mat-error *ngIf="roleForm.controls['visible_name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Системное Название</mat-label>
+      <input matInput formControlName="name" placeholder="" required>
+      <mat-error *ngIf="roleForm.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+      <mat-error *ngIf="roleForm.controls['name'].hasError('latinCharacters')">
+        Поле может содержать только латинские символы и "-"
+      </mat-error>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-content>
+    <div class="permissions-list">
+      <div class="inline m-3" *ngFor="let category of categorizedPermissions | keyvalue">
+        <h4>{{ PERMISSION_CATEGORIES[category.key] }}</h4>
+        <div *ngFor="let permission of category.value">
+          <mat-checkbox
+            [checked]="roleForm.controls['permissions'].value?.includes(permission?.id ?? '')"
+            (change)="onCheckboxChange(permission?.id ?? '', $event.checked)"
+          >
+            {{ permission?.visible_name ?? '' }}
+          </mat-checkbox>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()" [disabled]="formSubmitting">Отмена</button>
+    <button mat-flat-button color="primary"  [class.spinner]="formSubmitting" [disabled]="formSubmitting" type="submit" [disabled]="roleForm.invalid">Сохранить</button>
+  </div>
+</form>

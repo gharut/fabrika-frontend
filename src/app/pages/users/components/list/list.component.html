@@ -1,0 +1,58 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Пользователи</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-users')">
+        <button mat-raised-button color="primary" (click)="openCreateUserDialog()">Новый пользователь</button>
+      </div>
+      <table mat-table [dataSource]="usersTable" class="mat-elevation-z8 ">
+        <!-- Position Column -->
+        <ng-container matColumnDef="user-avatar">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let user">
+            <ngx-avatars [src]="webUrl+user.avatar" [name]="user.name"></ngx-avatars>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="user-name">
+          <th mat-header-cell *matHeaderCellDef> Ф.И.О </th>
+          <td mat-cell *matCellDef="let user"> {{user.name}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="user-email">
+          <th mat-header-cell *matHeaderCellDef> Почта </th>
+          <td mat-cell *matCellDef="let user"> {{user.email}} </td>
+        </ng-container>
+
+        <!-- Role column -->
+        <ng-container matColumnDef="user-role">
+          <th mat-header-cell *matHeaderCellDef> Роль </th>
+          <td mat-cell *matCellDef="let user"> {{user.role.visible_name}} </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="user-actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let user">
+            <button mat-icon-button color="primary" (click)="openUpdateUserDialog(user)" *ngIf="canPerformAction('edit-users')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="user.deletingProcess" [disabled]="user.deletingProcess" (click)="openDeleteUserDialog(user)"  *ngIf="canPerformAction('delete-users')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['user-avatar','user-name', 'user-email', 'user-role', 'user-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['user-avatar','user-name', 'user-email', 'user-role', 'user-actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+

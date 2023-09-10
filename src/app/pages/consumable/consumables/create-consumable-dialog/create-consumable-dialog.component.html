@@ -1,0 +1,137 @@
+<form [formGroup]="consumableForm" (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>
+    <h3>Создать категорию</h3>
+
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field class="w-100">
+      <mat-label>Название</mat-label>
+      <input matInput formControlName="name" placeholder="" required>
+      <mat-error *ngIf="consumableForm.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Размер</mat-label>
+      <input matInput formControlName="size" placeholder="" required>
+      <mat-error *ngIf="consumableForm.controls['size'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Еденица измерения</mat-label>
+      <mat-select formControlName="unit" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let unit of UNITS |  keyvalue" [value]="unit.key">
+          {{unit.value}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="consumableForm.controls['unit'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Цена</mat-label>
+      <input matInput formControlName="price" placeholder="" required>
+      <mat-error *ngIf="consumableForm.controls['price'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+      <mat-error *ngIf="consumableForm.controls['price'].hasError('pattern')">
+        Неверное значение
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-chip-grid #chipList>
+        <mat-chip-row
+          *ngFor="let tag of selectedTagList"
+          (removed)="removeTag(tag)">
+          {{tag.name}}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip-row>
+
+        <input
+          placeholder="Категории"
+          #tagsInput
+          formControlName="tags"
+          [matAutocomplete]="auto"
+          [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          (matChipInputTokenEnd)="addTag($event)">
+      </mat-chip-grid>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="tagSelected($event)">
+        <mat-option *ngFor="let tagName of filteredTags | async" [value]="tagName">
+          {{tagName}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-card>
+      <mat-card-header>
+        Оповещание цены
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row">
+          <mat-form-field class="col-xs-12 col-md-5">
+            <mat-label>Тип порога</mat-label>
+            <mat-select formControlName="price_threshold_type" (selectionChange)="thresholdValidationCheck()">
+              <mat-option></mat-option>
+              <mat-option *ngFor="let type of PRICE_THRESHOLD_TYPES |  keyvalue" [value]="type.key">
+                {{type.value}}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="consumableForm.controls['price_threshold_type'].hasError('required')">Поле обязательно</mat-error>
+          </mat-form-field>
+          <mat-form-field class="col-xs-12 col-md-5">
+            <mat-label>Порог</mat-label>
+            <input matInput formControlName="price_threshold" placeholder="" (change)="thresholdValidationCheck()">
+            <mat-error *ngIf="consumableForm.controls['price_threshold'].hasError('required')">
+              Поле обязательно
+            </mat-error>
+            <mat-error *ngIf="consumableForm.controls['price_threshold'].hasError('pattern')">
+              Неверное значение
+            </mat-error>
+          </mat-form-field>
+          <div class="col-12 py-0 my-0">
+            <span style="font-size: 12px" class="warning fst-italic">Получить оповещание когда цена продажи будет ниже чем цена покупки на заданный порог</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        Оповещание количества
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field class="col-xs-12 col-md-5">
+          <mat-label>Порог</mat-label>
+          <input matInput formControlName="qty_threshold" placeholder="">
+          <mat-error *ngIf="consumableForm.controls['qty_threshold'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+          <mat-error *ngIf="consumableForm.controls['qty_threshold'].hasError('pattern')">
+            Неверное значение
+          </mat-error>
+        </mat-form-field>
+        <div class="col-12 py-0 my-0">
+          <span style="font-size: 12px" class="warning fst-italic">Получить оповещание когда количество расходника будет ниче чем порог</span>
+        </div>
+      </mat-card-content>
+
+    </mat-card>
+
+
+
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="primary" [class.spinner]="formSubmitting" (click)="onSubmit()" type="submit"
+            [disabled]=" formSubmitting">Сохранить
+    </button>
+  </div>
+</form>

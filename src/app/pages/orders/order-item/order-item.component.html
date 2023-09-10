@@ -1,0 +1,664 @@
+<mat-card *ngIf="loaded">
+  <mat-card-header>
+
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-12">Заказ Но: {{order.id}}
+        <button mat-icon-button [matMenuTriggerFor]="deliveryMenu" aria-label="Example icon-button with a menu" class="float-end">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #deliveryMenu="matMenu">
+          <button mat-menu-item (click)="openCalculationDialog(order.id)">
+            <mat-icon>text_ad</mat-icon>
+            <span>Посмтреть счет</span>
+          </button>
+        </mat-menu>
+      </div>
+
+    </div>
+
+    <c-row>
+      <c-col [lg]="3">
+        <c-card [color]="order.delivery_status == 0 ? 'danger' : 'success'"
+                textColor="white"
+                class="mb-3">
+          <c-card-header *ngIf="order.delivery_status == 0; else isDelivered">
+            <div class="float-start" style="line-height: 50px">Не Доставлен</div>
+            <button mat-icon-button [matMenuTriggerFor]="deliveryMenu" aria-label="Example icon-button with a menu" class="float-end">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #deliveryMenu="matMenu">
+              <button mat-menu-item (click)="updateStatus('delivery_status', 1)">
+                <mat-icon>local_shipping</mat-icon>
+                <span >Доставлен</span>
+              </button>
+            </mat-menu>
+          </c-card-header>
+          <ng-template #isDelivered>
+            <c-card-header style="line-height: 50px">Доставлен</c-card-header>
+          </ng-template>
+        </c-card>
+      </c-col>
+
+      <c-col [lg]="3">
+        <c-card [color]="order.payment_status == 0 ? 'danger' : 'success'"
+                textColor="white"
+                class="mb-3">
+          <c-card-header *ngIf="order.payment_status == 0; else isPaid">
+            <div class="float-start" style="line-height: 50px">Не оплачен</div>
+            <button mat-icon-button [matMenuTriggerFor]="paymentMenu"  class="float-end">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #paymentMenu="matMenu">
+            <button mat-menu-item (click)="updateStatus('payment_status', 1)">
+                <mat-icon>paid</mat-icon>
+                <span>Оплачен</span>
+              </button>
+            </mat-menu>
+          </c-card-header>
+          <ng-template #isPaid>
+            <c-card-header style="line-height: 50px">Оплачено</c-card-header>
+          </ng-template>
+        </c-card>
+      </c-col>
+    </c-row>
+    <div class="row">
+      <div class="col-lg-4 col-md-5 col-sm-12">
+        <c-card class="h-100" (load)="packagingEdit">
+          <c-card-header>Клиент</c-card-header>
+          <c-card-body>
+            <div class="table-responsive overflow-hidden">
+              <table class="table  table-sm table-borderless">
+                <tbody>
+                <tr>
+                  <th scope="row">Название</th>
+                  <td class="w-100">{{order.client.name}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Тип</th>
+                  <td>{{CLIENT_TYPES[order.client.type]}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Телефон</th>
+                  <td>{{order.client.phone}}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Почта</th>
+                  <td>{{order.client.email}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </c-card-body>
+        </c-card>
+      </div>
+      <div class=" col-lg-8 col-md-7 col-sm-12">
+        <c-card class="h-100">
+          <c-card-header>
+            <div class="d-flex bd-highlight">
+              <div class="bd-highlight">Доставка
+                ({{getDeliveryServiceForm()?.get('service_enabled')?.value == true ? 'Наша' : 'Клиента'}})
+              </div>
+              <div class="ms-auto bd-highlight">
+                <mat-checkbox *ngIf="pickupEdit" class="" [checked]="getDeliveryServiceForm()?.get('service_enabled')?.value == false" (change)="toggleDelivery($event)">Доставка клиента
+                </mat-checkbox>
+                <a *ngIf="!pickupEdit" (click)="(pickupEdit = !pickupEdit)" style="cursor: pointer">
+                  <mat-icon>edit</mat-icon>
+                </a>
+
+              </div>
+            </div>
+          </c-card-header>
+          <c-card-body>
+            <div class="table-responsive overflow-hidden">
+              <form [formGroup]="pickupForm">
+                <div class="row">
+                  <div class="col-12">
+                    <table class="table  table-sm table-borderless">
+                      <thead *ngIf="!pickupEdit">
+                      <tr>
+                        <th class="col-4">Дата</th>
+                        <th class="col-4">Время</th>
+                        <th class="col-4"><span *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">Из</span>
+                        </th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <td class="col-4">
+                          <span *ngIf="!pickupEdit">{{order.supply_date}}</span>
+                          <mat-form-field *ngIf="pickupEdit">
+                            <mat-label>Дата</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="supply_date">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                          </mat-form-field>
+                        </td>
+                        <td class="col-4">
+                          <span *ngIf="!pickupEdit">{{order.supply_time}}</span>
+                          <mat-form-field *ngIf="pickupEdit">
+                            <mat-label>Время</mat-label>
+                            <mat-select required [(value)]="pickupFormData.supply_time" formControlName="supply_time">
+                              <mat-option value="10:00-12:00">10:00-12:00</mat-option>
+                              <mat-option value="12:00-14:00">12:00-14:00</mat-option>
+                              <mat-option value="14:00-16:00">14:00-16:00</mat-option>
+                              <mat-option value="16:00-18:00">16:00-18:00</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </td>
+                        <td formArrayName="services">
+                          <div
+                            *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
+                            <div *ngFor="let orderService of getPickupServices.controls; let i = index"
+                                 [formGroupName]="i">
+                              <div
+                                *ngIf="orderService.get('service_id')!.value == dsId"
+                                [hidden]="orderService.get('service_enabled')?.value != true">
+                                <span
+                                  *ngIf="!pickupEdit"> {{saJson(orderService.get('service_attribute')?.value)}}</span>
+                                <mat-form-field *ngIf="pickupEdit">
+                                  <mat-label>Из</mat-label>
+                                  <mat-select formControlName="service_attribute"
+                                              [required]="orderService.get('service_enabled')?.value == true">
+                                    <mat-option *ngFor="let opt of serviceById(dsId)!.attributes![0].attribute_data"
+                                                [value]="opt | json">{{opt.value}}</mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <table class="table  table-sm" *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
+                  <thead>
+                  <tr>
+                    <th class="col-1">Кол.</th>
+                    <th class="col-2">Дл.</th>
+                    <th class="col-2">Шир.</th>
+                    <th class="col-2">Выс.</th>
+                    <th class="col-2">Ед. изм.</th>
+                    <th class="col-2">Вес.</th>
+                    <th class="col-1"></th>
+                  </tr>
+                  </thead>
+                  <tbody formArrayName="supply_items">
+                  <tr *ngFor="let item of supplyItems.controls; let i = index; " [formGroupName]="i">
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].qty}}</span>
+                      <input cFormControl [valid]="item.get('qty')?.valid" sizing="sm" type="number"
+                             formControlName="qty" *ngIf="pickupEdit">
+                    </td>
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].width}}</span>
+                      <input cFormControl [valid]="item.get('width')?.valid" sizing="sm" type="number"
+                             formControlName="width" *ngIf="pickupEdit">
+                    </td>
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].length}}</span>
+                      <input cFormControl sizing="sm" [valid]="item.get('length')?.valid" type="number"
+                             formControlName="length" *ngIf="pickupEdit">
+                    </td>
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].height}}</span>
+                      <input cFormControl sizing="sm" [valid]="item.get('height')?.valid" type="number"
+                             formControlName="height" *ngIf="pickupEdit">
+                    </td>
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].unit}}</span>
+                      <select cSelect sizing="sm" [valid]="item.get('unit')?.valid" formControlName="unit"
+                              *ngIf="pickupEdit">
+                        <option value=""></option>
+                        <option value="cm" [selected]="order.supply_items[i]?.unit == 'cm'">см.</option>
+                        <option value="m" [selected]="order.supply_items[i]?.unit == 'm'">м.</option>
+                      </select>
+
+                    </td>
+                    <td>
+                      <span *ngIf="!pickupEdit">{{order.supply_items[i].weight}}</span>
+                      <input cFormControl sizing="sm" [valid]="item.get('weight')?.valid" type="number"
+                             formControlName="weight" *ngIf="pickupEdit">
+                    </td>
+                    <td>
+                      <mat-icon *ngIf="pickupEdit" class="minus-icon" color="warn" style="cursor: pointer"
+                                (click)="removeSupplyItem(i)">remove
+                      </mat-icon>
+                    </td>
+                  </tr>
+                  </tbody>
+                  <tfoot *ngIf="pickupEdit">
+                  <tr>
+                    <td colspan="7" class="text-end">
+                      <button mat-raised-button color="primary" (click)="addNewSupplyItem()">
+                        <mat-icon>add</mat-icon>
+                        Добавить
+                      </button>
+                    </td>
+                  </tr>
+                  </tfoot>
+                </table>
+                <div class="row" formGroupName="supply_details"
+                     *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
+                  <div class="col-lg-6 col-sm-12" formArrayName="0">
+                    <div class="row">
+                      <div class="col-6">Имя</div>
+                      <div class="col-6">
+                    <span *ngIf="!pickupEdit">
+                      {{pickupFormData.supply_details.name}}
+                    </span>
+                        <input cFormControl sizing="sm" type="text"
+                               formControlName="name" *ngIf="pickupEdit">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-6">Телефон</div>
+                      <div class="col-6">
+                    <span *ngIf="!pickupEdit">
+                      {{pickupFormData.supply_details.phone}}
+                    </span>
+                        <input cFormControl sizing="sm" type="text"
+                               formControlName="phone" *ngIf="pickupEdit">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-6">Номер груза</div>
+                      <div class="col-6">
+                    <span *ngIf="!pickupEdit">
+                      {{pickupFormData.supply_details.load_number}}
+                    </span>
+                        <input cFormControl sizing="sm" type="text"
+                               formControlName="load_number" *ngIf="pickupEdit">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6 col-sm-12" formArrayName="0">
+                    <div class="row">
+                      <div class="col-12">
+                          <span *ngIf="!pickupEdit">
+                          {{pickupFormData.supply_details.load_number}}
+                        </span>
+                        <textarea cFormControl placeholder="Другое" formControlName="load_number" id="other_field"
+                                  rows="3" *ngIf="pickupEdit"></textarea>
+                      </div>
+                      <div class="col-6">
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <mat-expansion-panel>
+                  <mat-expansion-panel-header>
+                    <mat-panel-title>
+                      <span class="fw-bold"> Другие услуги</span>
+                    </mat-panel-title>
+                    <mat-panel-description>
+                      <!-- description -->
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+
+
+                  <div formArrayName="services" *ngIf="pickupEdit">
+                    <table class="table  table-sm table-borderless">
+                      <ng-container *ngFor="let orderService of getPickupServices.controls; let i = index"
+                                    [formGroupName]="i">
+                        <tr
+                          *ngIf="orderService.get('service_id')!.value != dsId && serviceById(orderService.get('service_id')!.value)?.step == 'PREPROCESSING'">
+                          <td class="">
+                            <mat-slide-toggle
+                              formControlName="service_enabled"
+                              class="example-margin"
+                              color="primary"
+                              [checked]="orderService.get('service_enabled')?.value">
+                              {{servicesById[orderService.get('service_id')!.value].name}}
+                            </mat-slide-toggle>
+                          </td>
+                          <td class="w-100">
+
+                            <mat-form-field size="10" [hidden]="orderService.get('service_enabled')?.value !== true"
+                                            *ngIf="servicesById[orderService.get('service_id')!.value].apply_to == 'CUSTOM_COUNT'">
+                              <mat-label>{{servicesById[orderService.get('service_id')!.value].count_label}}</mat-label>
+                              <input matInput type="number" formControlName="service_attribute"
+                                     [required]="orderService.get('service_enabled')?.value == true">
+                            </mat-form-field>
+                          </td>
+                        </tr>
+                      </ng-container>
+                    </table>
+
+                  </div>
+
+                  <div *ngIf="!pickupEdit">
+                    <table class="table  table-sm table-borderless">
+                      <ng-container *ngFor="let svc of pickupFormData.services">
+                        <tr *ngIf="svc.service_enabled && svc.service_id != dsId">
+                          <td class="text-end fw-bold">{{servicesById[svc.service_id].name}}:</td>
+                          <td class="w-100">{{svc.service_attribute}}</td>
+                        </tr>
+                      </ng-container>
+                    </table>
+                  </div>
+                </mat-expansion-panel>
+              </form>
+            </div>
+
+            <!--            <ng-container *ngFor="order."-->
+          </c-card-body>
+          <c-card-footer *ngIf="pickupEdit">
+            <div class="d-flex bd-highlight">
+              <div class="me-auto bd-highlight">
+                <button mat-raised-button *ngIf="pickupEdit" (click)="(pickupEdit = !pickupEdit)"
+                        (click)="cancelDeliveryFormEdit()" color="warn" style="cursor: pointer">
+                  <mat-icon>cancel</mat-icon>
+                  Отменить
+                </button>
+              </div>
+              <div class="bd-highlight">
+
+              </div>
+              <div class="bd-highlight">
+                <button mat-raised-button class="bg-success text-white" (click)="savePickupForm()">Сохранить</button>
+              </div>
+            </div>
+          </c-card-footer>
+        </c-card>
+      </div>
+    </div>
+
+
+    <!-------------------------------- PRODUCTS AND SERVICES ------------------------------------->
+    <div class="row">
+      <div class="col-12 my-2">
+        <c-card class="h-100" over>
+          <c-card-header>
+            <div class="d-flex bd-highlight">
+              <div class="bd-highlight">Товары и услуги</div>
+              <div class="ms-auto bd-highlight">
+
+                <a *ngIf="!packagingEdit" (click)="(packagingEdit = !packagingEdit)" style="cursor: pointer">
+                  <mat-icon>edit</mat-icon>
+                </a>
+
+              </div>
+            </div>
+          </c-card-header>
+          <c-card-body>
+            <form [formGroup]="packagingForm">
+              <c-nav variant="tabs" formArrayName="products" #prodPanel>
+                <ng-container *ngFor="let product of getPackagingProducts.controls; let i = index" [formGroupName]="i">
+                  <a [cTabContent]="tabContent" [routerLink] [active]="i==0" [tabPaneIdx]="i"
+                     cNavLink aria-disabled="false">{{product.get('name')?.value}}({{getTotalQtyByIndex(i)}})</a>
+
+                </ng-container>
+                <a cNavLink (click)="addNewProduct()"
+                   *ngIf="packagingEdit">
+                  <mat-icon>add</mat-icon>
+                </a>
+              </c-nav>
+              <c-tab-content #tabContent="cTabContent" formArrayName="products" [activeTabPaneIdx]="activeProdPanel">
+                <ng-container *ngFor="let product of getPackagingProducts.controls; let i = index" [formGroupName]="i">
+                  <c-tab-pane class="p-3">
+                    <div class="row">
+                      <div class="col-lg-6 col-md-12">
+                        <table class="table  table-sm table-borderless">
+                          <thead>
+                          <tr>
+                            <th class="col-4"></th>
+                            <th class="col-4">Цвет</th>
+                            <th class="col-2">Размер</th>
+                            <th class="col-2">Кол. </th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <tr>
+                            <td>
+                              <span *ngIf="!packagingEdit">{{product.get('name')?.value}}</span>
+                              <input cFormControl sizing="sm" [valid]="product.get('name')?.valid" type="text"
+                                     formControlName="name" *ngIf="packagingEdit">
+                            </td>
+                            <td>
+                              <span *ngIf="!packagingEdit">{{product.get('color')?.value}}</span>
+                              <input cFormControl sizing="sm" [valid]="product.get('color')?.valid" type="text"
+                                     formControlName="color" *ngIf="packagingEdit">
+                            </td>
+                            <ng-container formArrayName="size">
+                              <td colspan="2">
+                                <div class="row p-0 m-0" *ngFor="let size of getPackagingProductSizes(i).controls let si = index" [formGroupName]="si">
+                                  <ng-container *ngIf="packagingEdit">
+                                    <c-input-group class="p-0">
+                                      <input cFormControl sizing="sm"
+                                             type="text"
+                                             formControlName="size"/>
+                                      <input cFormControl sizing="sm"
+                                             type="number"
+                                             formControlName="qty" [valid]="size.get('qty')?.valid"/>
+
+                                      <span cInputGroupText cBgColor="white" class="p-0">
+                                        <mat-icon color="warn" class="minus-icon" style="cursor: pointer"
+                                                  (click)="removeSizeItem(i, si)">remove</mat-icon>
+                                      </span>
+                                    </c-input-group>
+                                  </ng-container>
+                                  <ng-container *ngIf="!packagingEdit">
+                                    <div class="col-6 p-0">
+                                      <span
+                                        *ngIf="!packagingEdit">{{size.get('size')?.value}}</span>
+
+                                    </div>
+
+                                    <div class="col-6 p-0">
+                                      <span
+                                        *ngIf="!packagingEdit">{{size.get('qty')?.value}}</span>
+
+                                    </div>
+                                  </ng-container>
+                                </div>
+                              </td>
+
+
+                            </ng-container>
+
+                          </tr>
+
+                          <tr *ngIf="packagingEdit">
+                            <td colspan="2"></td>
+                            <td colspan="2"><button (click)="addSizeItem(i)" class="w-100" mat-raised-button color="primary"><mat-icon>add</mat-icon>Добавить размер</button></td>
+                          </tr>
+
+                          <ng-container formGroupName="child">
+                            <ng-container *ngFor="let child of getPackagingProductChild(i).controls; let chi = index" [formGroupName]="chi">
+                              <tr>
+                                <td colspan="4">
+                                  <mat-divider></mat-divider>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+
+                                </td>
+                                <td>
+                                  <span *ngIf="!packagingEdit">{{child.get('color')?.value}}</span>
+                                  <input cFormControl sizing="sm" [valid]="child.get('color')?.valid" type="text"
+                                         formControlName="color" *ngIf="packagingEdit">
+                                </td>
+                                <ng-container formArrayName="size">
+                                  <td colspan="2">
+                                    <div class="row p-0 m-0" *ngFor="let size of getPackagingProductChildSizes(i, chi).controls let chsi = index" [formGroupName]="chsi">
+                                      <ng-container *ngIf="packagingEdit">
+                                        <c-input-group class="p-0">
+                                          <input cFormControl sizing="sm"
+                                                 type="text"
+                                                 formControlName="size"/>
+                                          <input cFormControl sizing="sm"
+                                                 type="text"
+                                                 formControlName="qty" [valid]="size.get('qty')?.valid"/>
+
+                                          <span cInputGroupText cBgColor="white" class="p-0">
+                                        <mat-icon color="warn" class="minus-icon" style="cursor: pointer"
+                                                  (click)="removeChildSizeItem(i, chi, chsi)">remove</mat-icon>
+                                      </span>
+                                        </c-input-group>
+                                      </ng-container>
+                                      <ng-container *ngIf="!packagingEdit">
+                                        <div class="col-6 p-0">
+                                      <span
+                                        *ngIf="!packagingEdit">{{size.get('size')?.value}}</span>
+
+                                        </div>
+
+                                        <div class="col-6 p-0">
+                                      <span
+                                        *ngIf="!packagingEdit">{{size.get('qty')?.value}}</span>
+
+                                        </div>
+                                      </ng-container>
+                                    </div>
+                                  </td>
+
+
+                                </ng-container>
+
+                              </tr>
+
+                              <tr *ngIf="packagingEdit">
+                                <td></td>
+                                <td><button (click)="removeChild(i, chi)" class="w-100" mat-raised-button color="warn"><mat-icon>remove</mat-icon>Удалить цвет</button></td>
+                                <td colspan="2"><button (click)="addChildSizeItem(i, chi)" class="w-100" mat-raised-button color="primary"><mat-icon>add</mat-icon>Добавить размер</button></td>
+                              </tr>
+                            </ng-container>
+                          </ng-container>
+                          </tbody>
+                          <tfoot>
+                          <tr *ngIf="packagingEdit">
+                            <td colspan="2"></td>
+                            <td colspan="2"><button (click)="addNewChildItem(i)" class="w-100" mat-raised-button color=""><mat-icon>add</mat-icon>Добавить цвет</button></td>
+                          </tr>
+                          </tfoot>
+
+                        </table>
+
+                      </div>
+                      <div class="col-lg-6 col-md-12 mi-border-left">
+                        <table class="table  table-sm table-borderless" style="width: unset">
+                          <thead>
+                            <tr>
+                              <th colspan="3" class="fw-bold">Услуги</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td></td>
+                              <td>
+                                Комплектация
+                              </td>
+
+                              <td>
+                                <input cFormControl [valid]="product.get('complect')?.valid" sizing="sm" type="number"
+                                       formControlName="complect" *ngIf="packagingEdit">
+                                <span *ngIf="!packagingEdit">{{product.get('complect')?.value}}</span>
+                              </td>
+                              <td></td>
+                            </tr>
+                            <ng-container formArrayName="services">
+                              <tr *ngFor="let orderService of getPackagingProductServices(i).controls; let i = index"  [formGroupName]="i">
+                                <ng-container *ngIf="(!packagingEdit && orderService.get('service_enabled')?.value == true) || packagingEdit">
+                                  <td>
+                                    <mat-slide-toggle *ngIf="packagingEdit"
+                                                      formControlName="service_enabled"
+                                                      class="example-margin"
+                                                      color="primary"
+                                                      [checked]="orderService.get('service_enabled')?.value">
+                                    </mat-slide-toggle>
+                                  </td>
+                                  <td class="justify-content-end">
+                                    <span > {{servicesById[orderService.get('service_id')!.value].name}}</span>
+                                  </td>
+
+                                  <td>
+                                    <ng-container *ngIf="servicesById[orderService.get('service_id')!.value].use_consumable == true && orderService.get('service_enabled')?.value == true">
+                                      <div>
+                                        <select cSelect sizing="sm" *ngIf="packagingEdit && servicesById[orderService.get('service_id')!.value].use_consumable == true" [valid]="orderService.get('service_tag_id')?.value !== ''" formControlName="service_tag_id">
+                                          <option value=""></option>
+                                          <option *ngFor="let tag of servicesById[orderService.get('service_id')!.value].tags"
+                                                  [value]="tag.id">{{tag.name}}</option>
+
+                                        </select>
+
+                                      </div>
+                                      <span *ngIf="!packagingEdit">{{consumableById[orderService.get('service_attribute')!.value].name}} {{consumableById[orderService.get('service_attribute')!.value].size}}</span>
+                                    </ng-container>
+
+                                    <ng-container *ngIf="orderService.get('service_enabled')?.value == true">
+                                      <ng-container *ngIf="servicesById[orderService.get('service_id')!.value].attributes!.length != 0">
+                                        <select cSelect sizing="sm" *ngIf="packagingEdit" [valid]="orderService.get('service_attribute')?.value !== ''" formControlName="service_attribute">
+                                          <option value=""></option>
+                                          <option
+                                            *ngFor="let attr of servicesById[orderService.get('service_id')!.value].attributes![0].attribute_data"
+                                            [value]="attr | json">{{attr.value}}</option>
+
+                                        </select>
+                                        <span *ngIf="!packagingEdit">{{serviceAttributeParse(orderService.get('service_attribute')?.value)}}</span>
+                                      </ng-container>
+
+
+
+                                    </ng-container>
+                                  </td>
+                                  <td>
+                                    <ng-container *ngIf="orderService.get('service_enabled')?.value == true && servicesById[orderService.get('service_id')!.value].use_consumable == true">
+                                      <select cSelect sizing="sm" *ngIf="packagingEdit && orderService.get('service_tag_id')!.value !== ''" [valid]="orderService.get('service_attribute')!.value !== ''" formControlName="service_attribute">
+                                        <option value=""></option>
+                                        <option
+                                          *ngFor="let cons of consumableByTag[orderService.get('service_tag_id')!.value]"
+                                          [value]="cons.id">{{cons.size}}</option>
+
+                                      </select>
+
+                                    </ng-container>
+                                  </td>
+                                </ng-container>
+                              </tr>
+                            </ng-container>
+                          </tbody>
+
+                        </table>
+                      </div>
+                    </div>
+
+                  </c-tab-pane>
+                </ng-container>
+
+              </c-tab-content>
+            </form>
+          </c-card-body>
+          <c-card-footer *ngIf="packagingEdit">
+            <div class="d-flex bd-highlight">
+              <div class="me-auto bd-highlight">
+                <button mat-raised-button *ngIf="packagingEdit" (click)="(packagingEdit = !packagingEdit)"
+                        (click)="cancelPackagingFormEdit()" color="warn" style="cursor: pointer">
+                  <mat-icon>cancel</mat-icon>
+                  Отменить
+                </button>
+              </div>
+              <div class="bd-highlight">
+
+              </div>
+              <div class="bd-highlight">
+                <button mat-raised-button class="bg-success text-white" (click)="savePackagingForm()">Сохранить</button>
+              </div>
+            </div>
+          </c-card-footer>
+        </c-card>
+      </div>
+    </div>
+
+  </mat-card-content>
+</mat-card>

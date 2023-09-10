@@ -1,0 +1,70 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Клиенты</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-clients')">
+        <button mat-raised-button color="primary" (click)="openCreateClientDialog()">Новый клиент</button>
+      </div>
+      <table mat-table [dataSource]="clientTable" class="mat-elevation-z8 ">
+        <!-- Name Column -->
+        <ng-container matColumnDef="client-name">
+          <th mat-header-cell *matHeaderCellDef> Название </th>
+          <td mat-cell *matCellDef="let client"> {{client.name}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="client-type">
+          <th mat-header-cell *matHeaderCellDef> Тип </th>
+          <td mat-cell *matCellDef="let client"> {{CLIENT_TYPES[client.type]}} </td>
+        </ng-container>
+
+        <!-- Role column -->
+        <ng-container matColumnDef="client-phone">
+          <th mat-header-cell *matHeaderCellDef> Тел. </th>
+          <td mat-cell *matCellDef="let client"> {{client.phone}} </td>
+        </ng-container>
+
+        <!-- Role column -->
+        <ng-container matColumnDef="client-email">
+          <th mat-header-cell *matHeaderCellDef> Почта. </th>
+          <td mat-cell *matCellDef="let client"> {{client.email}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="client-details">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let client">
+            <div *ngIf="client.details && client.details.length>0" class="details-box">
+             {{client.details}}
+            </div>
+
+            <div *ngIf="!client.details || client.details.length===0" class="details-box">
+              <p class="name">Нет данных</p>
+            </div>
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="client-actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let client">
+            <button mat-icon-button color="primary" (click)="openUpdateClientDialog(client)" *ngIf="canPerformAction('edit-clients')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="client.deletingProcess" [disabled]="client.deletingProcess" (click)="openDeleteClientDialog(client)" *ngIf="canPerformAction('delete-clients')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['client-name','client-type', 'client-phone', 'client-email', 'client-details', 'client-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['client-name','client-type', 'client-phone', 'client-email', 'client-details', 'client-actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+

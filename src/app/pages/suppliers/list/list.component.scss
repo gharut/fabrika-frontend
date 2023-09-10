@@ -1,0 +1,21 @@
+.details-box {
+  background-color: #f7f7f7;
+  margin: 3px;
+  border-radius: 5px;
+  padding: 5px;
+  height: 100%;
+
+  p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .more{
+    cursor: pointer;
+    color: #4f6af7;
+  }
+}
+
+.mat-mdc-cell{
+  height: 0;
+}

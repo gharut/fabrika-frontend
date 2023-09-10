@@ -1,0 +1,94 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Поставщики</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-suppliers')">
+        <button mat-raised-button color="primary" (click)="openCreateSupplierDialog()">Новый поставщик</button>
+      </div>
+      <table mat-table [dataSource]="supplierTable" class="mat-elevation-z8 ">
+        <!-- Name Column -->
+        <ng-container matColumnDef="supplier-name">
+          <th mat-header-cell *matHeaderCellDef> Название </th>
+          <td mat-cell *matCellDef="let supplier"> {{supplier.name}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="supplier-address">
+          <th mat-header-cell *matHeaderCellDef> Адресс </th>
+          <td mat-cell *matCellDef="let supplier"> {{supplier.address}} </td>
+        </ng-container>
+
+        <!-- Role column -->
+        <ng-container matColumnDef="supplier-website">
+          <th mat-header-cell *matHeaderCellDef> Сайт </th>
+          <td mat-cell *matCellDef="let supplier"> {{supplier.website}} </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="supplier-tags">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let supplier">
+            <c-badge *ngFor="let tag of supplier.tags " color="success">{{tag.name}}</c-badge>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="supplier-contacts">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let supplier">
+            <div *ngIf="supplier.contacts && supplier.contacts.length>0" class="details-box">
+              <p class="fw-bold">{{supplier.contacts[0].name }} <span *ngIf="supplier.contacts[0].position">({{supplier.contacts[0].position}})</span></p>
+              <p *ngIf="supplier.contacts[0].phone">{{supplier.contacts[0].phone }}</p>
+              <p *ngIf="supplier.contacts[0].email">{{supplier.contacts[0].email }}</p>
+              <p class="more" *ngIf="supplier.contacts.length>1" (click)="openContactsDialog(supplier)">
+                <span>Показат все (+{{supplier.contacts.length-1}}) </span>
+              </p>
+            </div>
+
+            <div *ngIf="!supplier.contacts || supplier.contacts.length===0" class="details-box">
+              <p class="name">Нет контактов</p>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="supplier-payments">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let supplier">
+            <div *ngIf="supplier.payments && supplier.payments.length>0" class="details-box">
+              <p class="fw-bold">{{PAYMENT_TYPES[supplier.payments[0].type] }}</p>
+              <p *ngIf="supplier.payments[0].details">{{supplier.payments[0].details }}</p>
+              <p class="more" *ngIf="supplier.payments.length>1" (click)="openPaymentsDialog(supplier)">
+                <span>Показат все (+{{supplier.payments.length-1}}) </span>
+              </p>
+            </div>
+
+            <div *ngIf="!supplier.payments || supplier.payments.length===0" class="details-box">
+              <p class="name">Нет данных</p>
+            </div>
+          </td>
+
+        </ng-container>
+
+        <ng-container matColumnDef="supplier-actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let supplier">
+            <button mat-icon-button color="primary" (click)="openUpdateSupplierDialog(supplier)" *ngIf="canPerformAction('edit-roles')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="supplier.deletingProcess" [disabled]="supplier.deletingProcess" (click)="openDeleteSupplierDialog(supplier)" *ngIf="canPerformAction('delete-suppliers')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['supplier-name','supplier-address', 'supplier-website', 'supplier-tags', 'supplier-contacts', 'supplier-payments', 'supplier-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['supplier-name','supplier-address', 'supplier-website', 'supplier-tags', 'supplier-contacts', 'supplier-payments', 'supplier-actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+

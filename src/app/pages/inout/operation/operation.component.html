@@ -1,0 +1,114 @@
+<form [formGroup]="operationForm">
+  <div mat-dialog-title>
+    <h3>Добавить операцию</h3>
+
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field class="w-100">
+      <mat-label>Тип операции</mat-label>
+      <mat-select #operation_type formControlName="operation_type" required>
+        <mat-option></mat-option>
+        <mat-option [value]="1">
+          Приход
+        </mat-option>
+        <mat-option [value]="2">
+          Расход
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Причина</mat-label>
+      <mat-select formControlName="type" (selectionChange)="typesValidations()">
+        <mat-option></mat-option>
+        <mat-option *ngIf="operation_type.value==1" [value]="1">{{CONSUMABLE_OPERATION_TYPES[1]}}</mat-option>
+        <mat-option *ngIf="operation_type.value==1" [value]="2">{{CONSUMABLE_OPERATION_TYPES[2]}}</mat-option>
+        <mat-option *ngIf="operation_type.value==2" [value]="3">{{CONSUMABLE_OPERATION_TYPES[3]}}</mat-option>
+        <mat-option *ngIf="operation_type.value==2" [value]="4">{{CONSUMABLE_OPERATION_TYPES[4]}}</mat-option>
+      </mat-select>
+
+      <mat-error *ngIf="operationForm.controls['type'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="" *ngIf="operationForm.controls['type'].value == 1">
+      <mat-label>Поставщик</mat-label>
+      <mat-select formControlName="supplier_id">
+        <mat-option></mat-option>
+        <mat-option *ngFor="let supplier of suppliers" [value]="supplier.id">
+          {{supplier.name}}
+        </mat-option>
+      </mat-select>
+
+      <mat-error *ngIf="operationForm.controls['supplier_id'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Расходник</mat-label>
+      <mat-select formControlName="consumable_id">
+        <mat-option></mat-option>
+        <mat-option *ngFor="let consumable of consumables" [value]="consumable.id">
+          {{consumable.name}} {{consumable.size}}
+        </mat-option>
+      </mat-select>
+
+      <mat-error *ngIf="operationForm.controls['consumable_id'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+    <mat-card class="my-2">
+      <mat-card-content>
+        <mat-form-field class="col-md-5 col-sm-12 float-start">
+          <mat-label>Количество</mat-label>
+          <input matInput formControlName="qty" type="number">
+          <mat-error *ngIf="operationForm.controls['qty'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="col-md-5 col-sm-12r float-end" *ngIf="operationForm.controls['type'].value == 1">
+          <mat-label>Цена за ед.</mat-label>
+          <input matInput formControlName="price_per_unit" type="number">
+          <mat-error *ngIf="operationForm.controls['price_per_unit'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-card class="my-2" *ngIf="operationForm.controls['type'].value == 1">
+      <mat-card-content>
+        <div class="row">
+          <div class="col-6">
+            <mat-slide-toggle formControlName="delivery_status">Доставлено</mat-slide-toggle>
+          </div>
+          <div class="col-6">
+            <mat-slide-toggle formControlName="payment_status">Оплачено</mat-slide-toggle>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-form-field class="w-100">
+      <mat-label>Другие детали</mat-label>
+      <textarea matInput formControlName="details"></textarea>
+
+      <mat-error *ngIf="operationForm.controls['details'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+
+    <div mat-dialog-actions>
+      <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+      <button mat-flat-button color="primary" [class.spinner]="formSubmitting" (click)="onSubmit()" type="submit"
+              [disabled]=" formSubmitting">Сохранить
+      </button>
+    </div>
+  </div>
+</form>

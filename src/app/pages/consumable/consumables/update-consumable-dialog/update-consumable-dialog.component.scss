@@ -1,0 +1,11 @@
+.permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.permissions-list.inline {
+  flex-direction: row;
+}
+.input-field {
+  width: 45%;
+}

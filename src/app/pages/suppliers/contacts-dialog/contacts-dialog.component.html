@@ -1,0 +1,21 @@
+<c-card>
+    <c-card-header>
+      <h3>Контакты поставщика <strong>{{supplier.name}}</strong></h3>
+    </c-card-header>
+
+    <c-card-body>
+      <div *ngIf="supplier.contacts && supplier.contacts.length>0">
+        <div *ngFor="let contact of supplier.contacts" class="details-box">
+          <p class="fw-bold">Имя:{{contact.name }} <span *ngIf="contact.position">({{contact.position}})</span></p>
+          <p *ngIf="contact.phone">Телефон: {{contact.phone }}</p>
+          <p *ngIf="contact.email">Эл. Почта{{contact.email }}</p>
+          <mat-divider></mat-divider>
+        </div>
+
+      </div>
+    </c-card-body>
+    <c-card-footer>
+      <button mat-button (click)="close()">Закрыть</button>
+    </c-card-footer>
+
+</c-card>

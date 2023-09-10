@@ -1,0 +1,23 @@
+<div class="image-resizer-dialog">
+  <div class="body">
+    <p>
+      <image-cropper
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1/1"
+        [resizeToWidth]="100"
+        format="png"
+        (imageCropped)="imageCropped($event)"
+        output="base64"
+        (imageLoaded)="imageLoaded()"
+        (cropperReady)="cropperReady()"
+        (loadImageFailed)="loadImageFailed()"
+        [roundCropper]="true"
+      ></image-cropper>
+    </p>
+  </div>
+  <div class="footer">
+    <button class="cancel-button btn btn-secondary" (click)="closeDialog()">Cancel</button>
+    <button class="save-button btn btn-primary" (click)="saveCroppedImage()">Save</button>
+  </div>
+</div>

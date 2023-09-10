@@ -1,0 +1,555 @@
+<form [formGroup]="orderForm">
+  <c-card>
+    <c-card-header>
+      <h3>Создать заказ</h3>
+    </c-card-header>
+    <c-card-body>
+      <mat-form-field>
+        <mat-label>Клиент</mat-label>
+        <mat-select (openedChange)="clientListEvent($event)" formControlName="client">
+          <mat-form-field>
+
+            <input matInput #clientSearch (keyup)="onClientSearchKey($event)" placeholder="Поиск...">
+          </mat-form-field>
+
+          <mat-option (click)="openCreateClientDialog()">Новый клиент</mat-option>
+          <mat-option *ngFor="let client of selectedClients" [value]="client.id">{{client.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-divider></mat-divider>
+
+
+      <mat-stepper orientation="vertical" #stepper linear="true" (selectionChange)="onStepChange($event)">
+        <!-- ----------------------------------PICKUP FORM ---------------------------------- -->
+        <mat-step [stepControl]="getPickupFormGroup" formGroupName="pickup">
+          <ng-template matStepLabel>Забор груза</ng-template>
+          <mat-card class="mb-1">
+            <mat-card-header>Сроки</mat-card-header>
+            <mat-card-content>
+              <div class="d-flex bd-highlight mb-3">
+                <div class="p-2 bd-highlight">
+                  <mat-form-field>
+                    <mat-label>Дата</mat-label>
+                    <input matInput [matDatepicker]="picker" formControlName="supply_date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+                <div class="p-2 bd-highlight">
+                  <mat-form-field>
+                    <mat-label>Время</mat-label>
+                    <mat-select matNativeControl required formControlName="supply_time">
+                      <mat-option value="10:00-12:00">10:00-12:00</mat-option>
+                      <mat-option value="12:00-14:00">12:00-14:00</mat-option>
+                      <mat-option value="14:00-16:00">14:00-16:00</mat-option>
+                      <mat-option value="16:00-18:00">16:00-18:00</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+
+          <mat-card class="mb-1" formArrayName="products">
+            <mat-card-header>
+              <div class="d-flex bd-highlight w-100">
+                <div class="p-2 w-100 bd-highlight">Товары</div>
+                <div class="p-2 flex-shrink-1 bd-highlight">
+                  <button mat-fab extended color="primary" (click)="addNewProduct()">
+                    <mat-icon>add</mat-icon>
+                    Добавить товар
+                  </button>
+                </div>
+              </div>
+
+              <mat-divider></mat-divider>
+            </mat-card-header>
+
+            <mat-card-content>
+              <mat-card *ngFor="let product of productsArray.controls; let i = index" [formGroupName]="i" class="my-2">
+                <mat-card-header>
+                  <div class="d-flex bd-highlight m-0 w-100">
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Название</mat-label>
+                        <input matInput formControlName="name">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Цвет</mat-label>
+                        <input matInput formControlName="color">
+                        <button [disabled]="!product.get('color')?.value" matSuffix mat-icon-button aria-label="Clear"
+                                matTooltip="Добавить цвет" (click)="addColorToProduct(i)">
+                          <mat-icon *ngIf="product.get('color')?.value">add</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight w-100" formArrayName="size">
+                      <div class="d-flex bd-highlight m-0" *ngFor="let size of sizesArray(i).controls; let is = index"
+                           [formGroupName]="is">
+                        <div class="p-0 bd-highlight">
+                          <mat-form-field class="col-12">
+                            <mat-label>Размер</mat-label>
+                            <input matInput formControlName="size">
+                            <button [disabled]="!(size.get('size')?.value && is >= sizesArray(i).controls.length-1)"
+                                    matSuffix mat-icon-button aria-label="Clear" matTooltip="Добавить размер"
+                                    (click)="addSizeToProduct(i)">
+                              <mat-icon *ngIf="size.get('size')?.value && is >= sizesArray(i).controls.length-1">add
+                              </mat-icon>
+                            </button>
+                          </mat-form-field>
+                        </div>
+                        <div class="p-0 bd-highlight">
+                          <mat-form-field class="col-12">
+                            <mat-label>Количество</mat-label>
+                            <input matInput formControlName="qty" type="number">
+                          </mat-form-field>
+                        </div>
+                        <div class="p-0 bd-highlight" *ngIf="is != 0">
+                          <button mat-icon-button color="warn" (click)="removeSizeFromProduct(i, is)">
+                            <mat-icon>remove</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="p-2 flex-shrink-1 bd-highlight">
+                      <button mat-fab color="warn" (click)="removeProduct(i)">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+
+
+                  </div>
+                </mat-card-header>
+                <mat-card-content formArrayName="child">
+                  <div *ngFor="let child of childArray(i).controls; let ic = index" [formGroupName]="ic">
+                    <div class="d-flex bd-highlight m-0">
+                      <div class="p-2 bd-highlight">
+                        <mat-form-field class="col-12">
+                          <mat-label>Название</mat-label>
+                          <input matInput [value]="product.get('name')?.value" disabled>
+                        </mat-form-field>
+                      </div>
+                      <div class="p-2 bd-highlight">
+                        <mat-form-field class="col-12">
+                          <mat-label>Цвет</mat-label>
+                          <input matInput formControlName="color">
+                          <button matSuffix mat-icon-button aria-label="Clear" color="warn" matTooltip="Удалить цвет"
+                                  (click)="removeColorFromProduct(i, ic)">
+                            <mat-icon>remove</mat-icon>
+                          </button>
+                        </mat-form-field>
+                      </div>
+                      <div class="p-2 bd-highlight" formArrayName="size">
+                        <div class="d-flex bd-highlight m-0"
+                             *ngFor="let size of childSizesArray(i, ic).controls; let ics = index"
+                             [formGroupName]="ics">
+                          <div class="p-0 bd-highlight">
+                            <mat-form-field class="col-12">
+                              <mat-label>Размер</mat-label>
+                              <input matInput formControlName="size">
+                              <button
+                                [disabled]="!(size.get('size')?.value && ics >= childSizesArray(i, ic).controls.length-1)"
+                                matSuffix mat-icon-button aria-label="Clear" matTooltip="Добавить размер"
+                                (click)="addSizeToProductChild(i, ic)">
+                                <mat-icon
+                                  *ngIf="size.get('size')?.value && ics >= childSizesArray(i, ic).controls.length-1">add
+                                </mat-icon>
+                              </button>
+                            </mat-form-field>
+                          </div>
+                          <div class="p-0 bd-highlight">
+                            <mat-form-field class="col-12">
+                              <mat-label>Количество</mat-label>
+                              <input matInput type="number" formControlName="qty">
+                            </mat-form-field>
+                          </div>
+                          <div class="p-0 bd-highlight" *ngIf="ics != 0"
+                               (click)="removeSizeFromProductChild(i, ic, ics)">
+                            <button mat-icon-button color="warn">
+                              <mat-icon>remove</mat-icon>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            </mat-card-content>
+          </mat-card>
+
+
+          <mat-card>
+            <mat-card-header>
+              <div class="d-flex bd-highlight w-100">
+                <div class="p-2 w-100 bd-highlight">Доставка</div>
+                <div class="p-2 flex-shrink-1 bd-highlight">
+                  <mat-checkbox class="" (change)="toggleDelivery($event)">Доставка клиента</mat-checkbox>
+                </div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <div formArrayName="supply_items" class="mb-2">
+                <div *ngFor="let supplyItem of supplyItems.controls; let it = index" [formGroupName]="it">
+                  <div class="d-flex bd-highlight m-0">
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Количество</mat-label>
+                        <input matInput type="number" formControlName="qty">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field style="width: 100px;">
+                        <mat-label>Ширина</mat-label>
+                        <input matInput formControlName="width">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field style="width: 100px;">
+                        <mat-label>Длина</mat-label>
+                        <input matInput formControlName="length">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field style="width: 100px;">
+                        <mat-label>Высота</mat-label>
+                        <input matInput formControlName="height">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Ед. изм.</mat-label>
+                        <mat-select formControlName="unit">
+                          <mat-option value="cm">Сантиметр</mat-option>
+                          <mat-option value="m">метр</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Вес</mat-label>
+                        <input matInput formControlName="weight">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <button mat-icon-button color="warn" (click)="removeSupplyItem(it)">
+                        <mat-icon>remove</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button mat-raised-button color="primary" (click)="addNewSupplyItem()">
+                  <mat-icon>add</mat-icon>
+                  Добавить груз
+                </button>
+              </div>
+              <div formArrayName="services">
+                <div *ngFor="let orderService of pickupService.controls; let ips = index" [formGroupName]="ips">
+                  <div
+                    *ngIf="orderService.get('service_id')!.value == dsId"
+                    [hidden]="orderService.get('service_enabled')?.value != true">
+
+                    <mat-form-field>
+                      <mat-label>Откуда</mat-label>
+                      <mat-select formControlName="service_attribute"
+                                  [required]="orderService.get('service_enabled')?.value == true">
+                        <mat-option *ngFor="let opt of serviceById(dsId)!.attributes![0].attribute_data"
+                                    [value]="opt | json">{{opt.value}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <div formArrayName="supply_details"
+                   *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
+                <div *ngFor="let supplyDetail of supplyDetails.controls; let sid = index" [formGroupName]="sid">
+                  <div class="d-flex bd-highlight m-0">
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Имя</mat-label>
+                        <input matInput formControlName="name">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field style="">
+                        <mat-label>Телефон</mat-label>
+                        <input matInput formControlName="phone">
+                      </mat-form-field>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                      <mat-form-field style="">
+                        <mat-label>Номер груза</mat-label>
+                        <input matInput formControlName="load_number">
+                      </mat-form-field>
+                    </div>
+                  </div>
+
+                  <div class="d-flex bd-highlight m-0">
+                    <div class=" bd-highlight">
+                      <mat-form-field class="col-12">
+                        <mat-label>Другая информация</mat-label>
+                        <textarea matInput rows="4" formControlName="other"></textarea>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div formArrayName="services">
+                <div *ngFor="let orderService of pickupService.controls; let i = index" [formGroupName]="i">
+                  <div
+                    *ngIf="orderService.get('service_id')!.value != dsId && serviceById(orderService.get('service_id')!.value)?.step == 'PREPROCESSING'">
+
+                    <div class="d-flex bd-highlight mb-3">
+                      <div class="p-2 bd-highlight">
+                        <mat-checkbox formControlName="service_enabled" value="true"></mat-checkbox>
+                      </div>
+                      <div class="p-2 bd-highlight">
+                        {{servicesById[orderService.get('service_id')!.value].name}}
+
+                      </div>
+                      <div class="p-2 bd-highlight" [hidden]="orderService.get('service_enabled')?.value !== true">
+                        <mat-form-field
+                          *ngIf="servicesById[orderService.get('service_id')!.value].apply_to == 'CUSTOM_COUNT'">
+                          <mat-label>{{servicesById[orderService.get('service_id')!.value].count_label}}</mat-label>
+                          <input matInput type="number" formControlName="service_attribute"
+                                 [required]="orderService.get('service_enabled')?.value == true">
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </mat-card-content>
+          </mat-card>
+
+
+          <div>
+            <button mat-raised-button matStepperNext color="primary" [disabled]="getPickupFormGroup.invalid">
+              Далее
+            </button>
+          </div>
+        </mat-step>
+        <!-- ----------------------------ENД PICKUP FORM ---------------------------------- -->
+
+
+        <!-- ----------------------------PACKAGING FORM ---------------------------------- -->
+        <mat-step [stepControl]="getPackagingFormArray">
+          <ng-template matStepLabel>Упаковка</ng-template>
+          <mat-card>
+            <mat-card-header>
+              <mat-chip-listbox aria-label="Fish selection" #selectedProduct>
+                <mat-chip-option
+                  *ngFor="let product of productsArray.controls; let i = index"
+                  [value]="i">{{product.get('name')?.value}}</mat-chip-option>
+              </mat-chip-listbox>
+            </mat-card-header>
+
+            <mat-card-content formArrayName="packaging">
+              <div *ngFor="let packaging of getPackagingFormArray.controls; let pi = index"
+                   [formGroupName]="pi" [hidden]="packaging.get('product_id')?.value != selectedProduct.value">
+                <div>
+                  <mat-form-field>
+                    <mat-label>Компектация</mat-label>
+                    <input matInput formControlName="complect">
+                  </mat-form-field>
+                </div>
+                <div formArrayName="services">
+
+                  <div *ngFor="let orderService of getPackagingServicesArray(pi)!.controls; let oi = index"
+                       [formGroupName]="oi">
+                    <div class="d-flex bd-highlight mb-3">
+                      <div class="p-2 bd-highlight">
+                        <mat-checkbox formControlName="service_enabled" value="true"></mat-checkbox>
+                      </div>
+                      <div class="p-2 bd-highlight">
+                        <div
+                          *ngIf="servicesById[orderService.get('service_id')!.value].use_consumable == true; else onlyName">
+                          <mat-form-field>
+                            <mat-label>{{servicesById[orderService.get('service_id')!.value].name}}</mat-label>
+                            <mat-select formControlName="service_tag_id"
+                                        [disabled]="orderService.get('service_enabled')!.value == false"
+                                        [required]="orderService.get('service_enabled')?.value == true">
+                              <mat-option *ngFor="let tag of servicesById[orderService.get('service_id')!.value].tags"
+                                          [value]="tag.id">{{tag.name}}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+
+                        </div>
+
+                        <ng-template #onlyName>
+                          {{servicesById[orderService.get('service_id')!.value].name}}
+                        </ng-template>
+
+                      </div>
+                      <div class="p-2 bd-highlight" [hidden]="orderService.get('service_enabled')?.value !== true">
+                        <mat-form-field *ngIf="servicesById[orderService.get('service_id')!.value].attributes!.length != 0
+                    ">
+                          <mat-label>{{servicesById[orderService.get('service_id')!.value].attributes![0].name}}</mat-label>
+                          <mat-select formControlName="service_attribute">
+                            <mat-option
+                              *ngFor="let attr of servicesById[orderService.get('service_id')!.value].attributes![0].attribute_data"
+                              [value]="attr | json">{{attr.value}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+
+
+                        <mat-form-field
+                          *ngIf="servicesById[orderService.get('service_id')!.value].use_consumable == true && orderService.get('service_tag_id')!.value !== ''">
+
+
+                          <mat-select formControlName="service_attribute"
+                                      [required]="servicesById[orderService.get('service_id')!.value].use_consumable == true && orderService.get('service_tag_id')!.value !== ''">
+                            <mat-option
+                              *ngFor="let cons of consumableByTag[orderService.get('service_tag_id')!.value]"
+                              [value]="cons.id">{{cons.size}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+
+          </mat-card>
+
+
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <!-- ----------------------------END PACKAGING FORM ---------------------------------- -->
+        <mat-step>
+          <ng-template matStepLabel>Done</ng-template>
+          <div *ngIf="orderForm.valid">
+
+            <table class="calc-table">
+              <thead>
+
+              </thead>
+              <tbody>
+              <tr>
+                <th colspan="5">Забор Груза</th>
+              </tr>
+              <ng-container *ngIf="getDeliveryServiceData().service_enabled; else onlyService">
+                <tr class="blue">
+                  <td>Наименование</td>
+                  <td>Мест</td>
+                  <td>Объем</td>
+                  <td>Вес</td>
+                  <td>Стоимость</td>
+                </tr>
+                <ng-container *ngFor="let svc of calculation.pickup.services">
+                  <tr *ngIf="svc.service_name === servicesById[dsId].name">
+                    <td>Забор до нашего склада</td>
+                    <td>{{calculation.pickup.deliveryItems.qty}}</td>
+                    <td>{{calculation.pickup.deliveryItems.total_volume}}</td>
+                    <td>{{calculation.pickup.deliveryItems.total_weight}}</td>
+                    <td>{{svc.total_price}}</td>
+                  </tr>
+                </ng-container>
+                <tr>
+                  <th colspan="5">Другие услуги</th>
+                </tr>
+
+              </ng-container>
+              <ng-template #onlyService>
+                <tr>
+                  <th colspan="5">Другие услуги</th>
+                </tr>
+              </ng-template>
+
+              <tr class="blue">
+                <td colspan="2">Наименование</td>
+                <td>Количество</td>
+                <td>Цена</td>
+                <td>Стоимость</td>
+              </tr>
+              <ng-container *ngFor="let svc of calculation.pickup.services">
+                <ng-container *ngIf="svc.service_name !== servicesById[dsId].name">
+                  <tr>
+                    <td colspan="2">{{svc.service_name}}</td>
+                    <td>{{svc.count}}</td>
+                    <td>{{svc.service_price}}</td>
+                    <td *ngIf="svc.consumable == undefined">{{svc.total_price}}</td>
+                    <td *ngIf="svc.consumable != undefined" rowspan="2">{{svc.total_price}}</td>
+                  </tr>
+                  <tr *ngIf="svc.consumable != undefined">
+                    <td> &nbsp; &nbsp; &nbsp;{{svc.consumable?.consumable_name}}</td>
+                    <td>{{svc.consumable?.count}}</td>
+                    <td>{{svc.consumable?.consumable_price}}</td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+              <tr>
+                <td colspan="4"></td>
+                <td>{{calculation.pickup.total_price}}</td>
+              </tr>
+              </tbody>
+            </table>
+
+
+
+            <table class="calc-table">
+              <thead>
+              <tr>
+                <th colspan="4">Упаковка</th>
+              </tr>
+              <tr>
+                <td>Наименование</td>
+                <td>Количество</td>
+                <td>Цена</td>
+                <td>Стоимость</td>
+              </tr>
+              </thead>
+              <tbody *ngFor="let prd of calculation.packaging.products">
+              <tr>
+                <td class="calculation-product" colspan="4">{{prd.product_name}}</td>
+              </tr>
+              <ng-container *ngFor="let svc of prd.services">
+                <tr>
+                  <td>{{svc.service_name}}</td>
+                  <td>{{svc.count}}</td>
+                  <td>{{svc.service_price}}</td>
+                  <td *ngIf="svc.consumable == undefined">{{svc.total_price}}</td>
+                  <td *ngIf="svc.consumable != undefined" rowspan="2">{{svc.total_price}}</td>
+                </tr>
+                <tr *ngIf="svc.consumable != undefined">
+                  <td>{{svc.consumable?.consumable_name}}</td>
+                  <td>{{svc.consumable?.count}}</td>
+                  <td>{{svc.consumable?.consumable_price}}</td>
+                </tr>
+              </ng-container>
+              <tr>
+                <td colspan="3"></td>
+                <td>{{prd.total_price}}</td>
+              </tr>
+              </tbody>
+            </table>
+
+            <div class="row">
+              <div class="col-12 text-right">
+                Итого: <b>{{calculation.total_price}}</b>
+              </div>
+            </div>
+
+          </div>
+        </mat-step>
+      </mat-stepper>
+    </c-card-body>
+    <c-card-footer>
+      <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="orderForm.invalid">Сохранить</button>
+    </c-card-footer>
+  </c-card>
+</form>

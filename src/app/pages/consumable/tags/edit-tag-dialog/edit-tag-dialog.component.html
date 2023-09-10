@@ -1,0 +1,31 @@
+<form [formGroup]="tagForm">
+  <div mat-dialog-title>
+    <h3>Создать категорию</h3>
+
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field class="w-100">
+      <mat-label>Название</mat-label>
+      <input matInput formControlName="name" placeholder="" required>
+      <mat-error *ngIf="tagForm.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Тип</mat-label>
+      <mat-select formControlName="type" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let type of TAG_TYPES |  keyvalue" [value]="type.key">
+          {{type.value}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="tagForm.controls['type'].hasError('required')">Поле обязательно</mat-error>
+    </mat-form-field>
+
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="primary" (click)="onSubmit()" [class.spinner]="formSubmitting" type="submit" [disabled]="tagForm.invalid || formSubmitting">Сохранить</button>
+  </div>
+</form>

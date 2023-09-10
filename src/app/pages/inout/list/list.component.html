@@ -1,0 +1,60 @@
+<div class="mb-3 text-right" *ngIf="canPerformAction('create-tags')">
+  <button mat-raised-button color="primary" (click)="openOperation()">Добавить операцию</button>
+</div>
+
+<table mat-table *ngIf="dataSource; else noDataFound" [dataSource]="dataSource" matSort>
+  <!-- Name Column -->
+  <ng-container matColumnDef="type">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+    <td mat-cell *matCellDef="let row" [class]="row.type == 0 || row.type == 3 || row.type == 4? 'text-danger' : 'text-success'">
+      <mat-icon>
+        {{row.type == 0 ? "arrow_back_ios" : "arrow_forward_ios"}}
+      </mat-icon>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="type-text">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+    <td mat-cell *matCellDef="let row" [class]="row.type == 0 || row.type == 3 || row.type == 4? 'text-danger' : 'text-success'">
+      <span>
+        {{CONSUMABLE_OPERATION_TYPES[row.type]}}
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="type-consumable-name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Расходник</th>
+    <td mat-cell *matCellDef="let row">
+      {{row.consumable.name}}({{row.consumable.size}})
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="type-supplier">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Поставщик</th>
+    <td mat-cell *matCellDef="let row">
+      <span *ngIf="row.supplier">{{row.supplier.name}}</span>
+    </td>
+  </ng-container>
+
+  <!-- Email Column -->
+  <ng-container matColumnDef="qty">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Кол </th>
+    <td mat-cell *matCellDef="let row"> {{row.qty}} {{UNIT_SHORT[row.consumable.unit]}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="price_per_unit">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Цена за ед. </th>
+    <td mat-cell *matCellDef="let row"> {{row.price_per_unit}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="total_price">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header> Сумма. </th>
+    <td mat-cell *matCellDef="let row"> {{ row.price_per_unit ? sum(row.qty, row.price_per_unit) : '' }} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+<ng-template #noDataFound>
+  <h1> No Data Found </h1>
+</ng-template>
+<basic-pagination [length]="total" [pageOffset]="pageOffset" [pageIndex]="pageIndex"></basic-pagination>

@@ -1,0 +1,43 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Роли</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-roles')">
+        <button mat-raised-button color="primary" (click)="openCreateRoleDialog()">Новая роль</button>
+      </div>
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 demo-table">
+        <!-- Position Column -->
+        <ng-container matColumnDef="role-id">
+          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <td mat-cell *matCellDef="let role"> {{role.id}} </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="role-name">
+          <th mat-header-cell *matHeaderCellDef> Название </th>
+          <td mat-cell *matCellDef="let role"> {{role.visible_name}}({{role.name}}) </td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="role-actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let role">
+            <button mat-icon-button color="primary" (click)="openUpdateRoleDialog(role)" *ngIf="canPerformAction('edit-roles')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="role.deletingProcess" [disabled]="role.deletingProcess" (click)="openDeleteRoleDialog(role)" *ngIf="canPerformAction('delete-roles')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['role-id','role-name', 'role-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['role-id','role-name', 'role-actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>

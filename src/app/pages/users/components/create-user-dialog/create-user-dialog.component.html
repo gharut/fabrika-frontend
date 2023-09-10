@@ -1,0 +1,54 @@
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>
+    <h3>Создать пользователя</h3>
+
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field class="w-100">
+      <mat-label>Ф.И.О</mat-label>
+      <input matInput formControlName="name" placeholder="" required>
+      <mat-error *ngIf="userForm.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Почта</mat-label>
+      <input matInput formControlName="email" placeholder="" required>
+      <mat-error *ngIf="userForm.controls['email'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+      <mat-error *ngIf="userForm.controls['email'].hasError('email')">
+        Введите правильную почту
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Роль</mat-label>
+      <mat-select formControlName="role" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let role of roles" [value]="role.id">
+          {{role.visible_name}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="userForm.controls['role'].hasError('required')">Поле обязательно</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Адрес</mat-label>
+      <input matInput formControlName="address" placeholder="" required>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Телефон</mat-label>
+      <input type="text" mask="(000) 000-00-00" matInput formControlName="phone" prefix="+7"
+             [showMaskTyped]="true" [dropSpecialCharacters]="false">
+    </mat-form-field>
+
+
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="primary" [class.spinner]="formSubmitting" type="submit" [disabled]="userForm.invalid || formSubmitting">Сохранить</button>
+  </div>
+</form>

@@ -1,0 +1,227 @@
+<form [formGroup]="serviceForm">
+  <div mat-dialog-title>
+    <h3>Создать услугу</h3>
+  </div>
+  <div mat-dialog-content>
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Название</mat-label>
+          <input matInput formControlName="name" placeholder="">
+          <mat-error *ngIf="serviceForm.controls['name'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Этап</mat-label>
+          <mat-select formControlName="step" >
+            <mat-option></mat-option>
+            <mat-option *ngFor="let step of SERVICE_STEPS |  keyvalue" [value]="step.key">
+              {{step.value}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="serviceForm.controls['step'].hasError('required')">Поле обязательно</mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Применяется к</mat-label>
+          <mat-select formControlName="apply_to" >
+            <mat-option></mat-option>
+            <mat-option *ngFor="let at of SERVICE_APPLY_TO |  keyvalue" [value]="at.key">
+              {{at.value}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="serviceForm.controls['apply_to'].hasError('required')">Поле обязательно</mat-error>
+        </mat-form-field>
+
+
+
+      </div>
+      <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Цена</mat-label>
+          <input matInput type="number" formControlName="price">
+        </mat-form-field>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <mat-form-field  class="w-100">
+          <mat-label>Тип отчета</mat-label>
+          <mat-select formControlName="report_type">
+            <mat-option></mat-option>
+            <mat-option *ngFor="let rt of SERVICE_REPORT_TYPES |  keyvalue" [value]="rt.key">
+              {{rt.value}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="serviceForm.controls['report_type'].hasError('required')">Поле обязательно</mat-error>
+        </mat-form-field>
+
+      </div>
+      <div class="col-6">
+        <mat-form-field *ngIf="serviceForm.controls['apply_to'].value == 'PRODUCT_COUNT' || serviceForm.controls['apply_to'].value == 'CUSTOM_COUNT'" class="w-100">
+          <mat-label>Название поля количества</mat-label>
+          <input matInput formControlName="count_label">
+
+        </mat-form-field>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-6">
+        <div class="row">
+          <div class="col-12">
+            <mat-slide-toggle formControlName="use_consumable">Имеет расходники</mat-slide-toggle>
+          </div>
+          <div class="col-12">
+            <mat-slide-toggle *ngIf="serviceForm.controls['apply_to'].value == 'PRODUCT_COUNT'" formControlName="multiple_products">Несколько типов товара</mat-slide-toggle>
+          </div>
+        </div>
+
+
+
+      </div>
+      <div class="col-6" *ngIf="serviceForm.controls['use_consumable'].value">
+        <mat-form-field class="w-100">
+          <mat-chip-grid #chipList>
+            <mat-chip-row
+              *ngFor="let tag of selectedTagList"
+              (removed)="removeTag(tag)">
+              {{tag.name}}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip-row>
+
+            <input
+              placeholder="Категории"
+              #tagsInput
+              formControlName="tags"
+              [matAutocomplete]="auto"
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              (matChipInputTokenEnd)="addTag($event)">
+          </mat-chip-grid>
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="tagSelected($event)">
+            <mat-option *ngFor="let tagName of filteredTags | async" [value]="tagName">
+              {{tagName}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </div>
+    <mat-card>
+      <mat-card-header>
+        <h5>Атрибуты</h5>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="attributes">
+          <mat-card *ngFor="let attribute of attributes.controls; let attributeIndex = index" [formGroupName]="attributeIndex" class="my-3 attributes-group">
+            <mat-card-header>
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-6">
+                    <mat-form-field class="w-100">
+                      <mat-label>Название</mat-label>
+                      <input matInput formControlName="name">
+                    </mat-form-field>
+                  </div>
+                  <div class="col-6">
+                    <mat-form-field class="w-100">
+                      <mat-label>Тип атрибута</mat-label>
+                      <mat-select formControlName="attribute_type" >
+                        <mat-option></mat-option>
+                        <mat-option *ngFor="let st of SERVICE_ATTRIBUTE_TYPES |  keyvalue" [value]="st.key">
+                          {{st.value}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="row">
+                <div class="col-6">
+                  <mat-form-field class="w-100" *ngIf="attributeForm(attributeIndex).get('attribute_type')!.value == 'CUSTOM_LIST'">
+                    <mat-label>Влияние на цену</mat-label>
+                    <mat-select formControlName="apply_to_price_type" >
+                      <mat-option></mat-option>
+                      <mat-option *ngFor="let stap of SERVICE_ATTRIBUTE_APPLY_PRICE_TYPES |  keyvalue" [value]="stap.key">
+                        {{stap.value}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                </div>
+                <div class="col-6">
+                  <mat-slide-toggle *ngIf="attributeForm(attributeIndex).get('attribute_type')!.value == 'CUSTOM_LIST'" formControlName="allow_multiselect">Множественный выбор</mat-slide-toggle>
+
+
+                </div>
+              </div>
+
+
+              <div class="row" >
+                <div class="col-12 border-1 rounded-1 border-secondary" formArrayName="attribute_data" *ngIf="attributeForm(attributeIndex).get('attribute_type')!.value == 'CUSTOM_LIST'">
+                  <div class="col-12">
+                    Список
+                  </div>
+                  <div *ngFor="let attribute_data of attributeArray(attributeIndex).controls; let attributeDataIndex = index"  class="row">
+                    <div class="col-12" [formGroupName]="attributeDataIndex">
+                      <div class="row">
+                        <div class="col-5">
+                          <mat-form-field class="w-100">
+                            <mat-label>Значение</mat-label>
+                            <input matInput formControlName="value">
+                          </mat-form-field>
+                        </div>
+                        <div class="col-5">
+                          <mat-form-field class="w-100" disabled="true">
+                            <mat-label>Цена
+                              </mat-label>
+                            <input matInput formControlName="price">
+                          </mat-form-field>
+                        </div>
+                        <div class="col-2">
+                          <button mat-raised-button color="warn" (click)="removeAttributeData(attributeIndex, attributeDataIndex)">Удалить значение</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button mat-raised-button (click)="addNewAttributeData(attributeIndex)">Добавить элемент списка</button>
+                </div>
+              </div>
+
+
+            <mat-divider></mat-divider>
+            </mat-card-content>
+            <!-- Remove Contact Button -->
+            <mat-card-actions>
+              <button mat-raised-button color="warn" (click)="removeAttribute(attributeIndex)">Удалить атрибут</button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </mat-card-content>
+      <mat-card-footer>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="addNewAttribute()">
+            <mat-icon>add</mat-icon>
+            Добавить атрибут
+          </button>
+        </mat-card-actions>
+      </mat-card-footer>
+    </mat-card>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+  <button mat-flat-button color="primary" (click)="onSubmit()" [class.spinner]="formSubmitting" type="submit" [disabled]="serviceForm.invalid || formSubmitting">Сохранить</button>
+  </div>
+</form>

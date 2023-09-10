@@ -1,0 +1,20 @@
+<c-card>
+    <c-card-header>
+      <h5>Методы оплаты поставщика <strong>{{supplier.name}}</strong></h5>
+    </c-card-header>
+
+    <c-card-body>
+      <div *ngIf="supplier.payments && supplier.payments.length>0">
+        <div *ngFor="let payment of supplier.payments" class="details-box">
+          <p class="fw-bold">Тип:{{ PAYMENT_TYPES[payment.type!] }}</p>
+          <p *ngIf="payment.details">{{payment.details }}</p>
+          <mat-divider></mat-divider>
+        </div>
+
+      </div>
+    </c-card-body>
+    <c-card-footer>
+      <button mat-button (click)="close()">Закрыть</button>
+    </c-card-footer>
+
+</c-card>

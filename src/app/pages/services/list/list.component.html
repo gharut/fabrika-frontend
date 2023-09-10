@@ -1,0 +1,46 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">Услуги</h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-tags')">
+        <button mat-raised-button color="primary" (click)="openOperation()">Добавить услугу</button>
+        <button mat-raised-button color="primary" (click)="openDeliverySettings()">Настройки</button>
+      </div>
+      <table mat-table [dataSource]="servicesTable" class="mat-elevation-z8 ">
+        <!-- Name Column -->
+        <ng-container matColumnDef="service-name">
+          <th mat-header-cell *matHeaderCellDef> Название </th>
+          <td mat-cell *matCellDef="let service"> {{service.name}} </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="service-price">
+          <th mat-header-cell *matHeaderCellDef> Цена </th>
+          <td mat-cell *matCellDef="let service"> {{service.price}} </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="service-actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let service">
+            <button mat-icon-button color="primary" (click)="openUpdateServiceDialog(service)" *ngIf="canPerformAction('edit-services')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="service.deletingProcess" [disabled]="service.deletingProcess" (click)="openDeleteServiceDialog(service)" *ngIf="canPerformAction('delete-services')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['service-name','service-price', 'service-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['service-name','service-price', 'service-actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+

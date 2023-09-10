@@ -1,0 +1,12 @@
+.calc-table{
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+.calc-table thead td, .calc-table .blue {
+  background-color: #69b1ff;
+  font-weight: bold;
+}

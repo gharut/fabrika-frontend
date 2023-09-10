@@ -1,0 +1,111 @@
+<div  *ngIf="loaded">
+<table class="calc-table">
+  <thead>
+
+  </thead>
+  <tbody>
+  <tr>
+    <th colspan="5">Забор Груза</th>
+  </tr>
+  <ng-container *ngIf="calculation.pickup.deliveryItems.qty > 0; else onlyService">
+    <tr class="blue">
+      <td>Наименование</td>
+      <td>Мест</td>
+      <td>Объем</td>
+      <td>Вес</td>
+      <td>Стоимость</td>
+    </tr>
+    <ng-container *ngFor="let svc of calculation.pickup.services">
+      <tr *ngIf="svc.service_name === servicesById[dsId].name">
+        <td>Забор до нашего склада</td>
+        <td>{{calculation.pickup.deliveryItems.qty}}</td>
+        <td>{{calculation.pickup.deliveryItems.total_volume}}</td>
+        <td>{{calculation.pickup.deliveryItems.total_weight}}</td>
+        <td>{{svc.total_price}}</td>
+      </tr>
+    </ng-container>
+    <tr>
+      <th colspan="5">Другие услуги</th>
+    </tr>
+
+  </ng-container>
+  <ng-template #onlyService>
+    <tr>
+      <th colspan="5">Другие услуги</th>
+    </tr>
+  </ng-template>
+
+  <tr class="blue">
+    <td colspan="2">Наименование</td>
+    <td>Количество</td>
+    <td>Цена</td>
+    <td>Стоимость</td>
+  </tr>
+  <ng-container *ngFor="let svc of calculation.pickup.services">
+    <ng-container *ngIf="svc.service_name !== servicesById[dsId].name">
+      <tr>
+        <td colspan="2">{{svc.service_name}}</td>
+        <td>{{svc.count}}</td>
+        <td>{{svc.service_price}}</td>
+        <td *ngIf="svc.consumable == undefined">{{svc.total_price}}</td>
+        <td *ngIf="svc.consumable != undefined" rowspan="2">{{svc.total_price}}</td>
+      </tr>
+      <tr *ngIf="svc.consumable != undefined">
+        <td> &nbsp; &nbsp; &nbsp;{{svc.consumable?.consumable_name}}</td>
+        <td>{{svc.consumable?.count}}</td>
+        <td>{{svc.consumable?.consumable_price}}</td>
+      </tr>
+    </ng-container>
+  </ng-container>
+  <tr>
+    <td colspan="4"></td>
+    <td>{{calculation.pickup.total_price}}</td>
+  </tr>
+  </tbody>
+</table>
+
+
+
+<table class="calc-table">
+  <thead>
+  <tr>
+    <th colspan="4">Упаковка</th>
+  </tr>
+  <tr>
+    <td>Наименование</td>
+    <td>Количество</td>
+    <td>Цена</td>
+    <td>Стоимость</td>
+  </tr>
+  </thead>
+  <tbody *ngFor="let prd of calculation.packaging.products">
+  <tr>
+    <td class="calculation-product" colspan="4">{{prd.product_name}}</td>
+  </tr>
+  <ng-container *ngFor="let svc of prd.services">
+    <tr>
+      <td>{{svc.service_name}}</td>
+      <td>{{svc.count}}</td>
+      <td>{{svc.service_price}}</td>
+      <td *ngIf="svc.consumable == undefined">{{svc.total_price}}</td>
+      <td *ngIf="svc.consumable != undefined" rowspan="2">{{svc.total_price}}</td>
+    </tr>
+    <tr *ngIf="svc.consumable != undefined">
+      <td>{{svc.consumable?.consumable_name}}</td>
+      <td>{{svc.consumable?.count}}</td>
+      <td>{{svc.consumable?.consumable_price}}</td>
+    </tr>
+  </ng-container>
+  <tr>
+    <td colspan="3"></td>
+    <td>{{prd.total_price}}</td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="row">
+  <div class="col-12 text-right">
+    Итого: <b>{{calculation.total_price}}</b>
+  </div>
+</div>
+</div>
