@@ -1,1 +1,104 @@
-<p>update-client-dialog works!</p>
+<form [formGroup]="clientForm">
+  <div mat-dialog-title>
+    <h3>Изменить Клиента</h3>
+
+  </div>
+  <div mat-dialog-content>
+    <mat-form-field class="w-100">
+      <mat-label>Название</mat-label>
+      <input matInput formControlName="name" placeholder="" required>
+      <mat-error *ngIf="clientForm.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Тип операции</mat-label>
+      <mat-select #type formControlName="type" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let item of CLIENT_TYPES | keyvalue" [value]="item.key">
+          {{item.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Телефон</mat-label>
+      <input type="text" mask="(000) 000-00-00" matInput formControlName="phone" prefix="+7"
+             [showMaskTyped]="true" [dropSpecialCharacters]="false">
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Email</mat-label>
+      <input type="email" matInput formControlName="email"
+             placeholder="">
+      <mat-error
+        *ngIf="clientForm.controls['email'].hasError('email') && !clientForm.controls['email'].hasError('required')">
+        Укажите правильный почтовой ящик
+      </mat-error>
+      <mat-error *ngIf="clientForm.controls['email'].hasError('required')">
+        Поле обязательное
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Telegram</mat-label>
+      <input type="text" matInput formControlName="telegram"
+             placeholder="">
+      <mat-error
+        *ngIf="clientForm.controls['telegram'].hasError('telegram') && !clientForm.controls['telegram'].hasError('required')">
+        Укажите правильный telegram
+      </mat-error>
+      <mat-error *ngIf="clientForm.controls['telegram'].hasError('required')">
+        Поле обязательное
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Payments -->
+    <mat-card>
+      <mat-card-header>
+        <h5>Другие данные</h5>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="details">
+          <mat-card *ngFor="let detail of details.controls; let i = index" [formGroupName]="i" class="payment-group">
+            <mat-card-content>
+              <mat-form-field class="w-100">
+                <mat-label>Свойство</mat-label>
+                <input matInput formControlName="key" placeholder="">
+              </mat-form-field>
+              <mat-form-field class="w-100">
+                <mat-label>Значение</mat-label>
+                <input matInput formControlName="value" placeholder="">
+              </mat-form-field>
+            </mat-card-content>
+            <!-- Remove Contact Button -->
+            <mat-card-actions>
+              <button mat-icon-button color="warn" (click)="removeDetail(i)">
+                <mat-icon>remove</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </mat-card-content>
+      <mat-card-footer>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="addNewDetailGroup()">
+            <mat-icon>add</mat-icon>
+            Добавить деталь
+          </button>
+        </mat-card-actions>
+
+      </mat-card-footer>
+    </mat-card>
+
+
+  </div>
+  <div mat-dialog-actions>
+    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="primary" [class.spinner]="formSubmitting" type="submit"
+            [disabled]="clientForm.invalid || formSubmitting" (click)="onSubmit()">Сохранить
+    </button>
+  </div>
+</form>
+

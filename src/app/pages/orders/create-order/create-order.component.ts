@@ -179,8 +179,6 @@ export class CreateOrderComponent implements OnInit {
 
     this.orderForm.valueChanges.subscribe((formData) => {
       this.orderFormData = formData;
-      console.log(this.orderFormData)
-      console.log(this.orderForm)
     });
 
 
@@ -266,7 +264,7 @@ export class CreateOrderComponent implements OnInit {
 
   addServicesToProduct(i: number) {
     let servicesForm = this.formBuilder.group({
-      complect: ['', Validators.required],
+      complect: [1, Validators.required],
       product_id: [i, Validators.required],
       services: new FormArray([])
     })

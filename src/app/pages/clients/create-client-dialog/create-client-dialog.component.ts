@@ -46,6 +46,7 @@ export class CreateClientDialogComponent implements OnInit {
       email: ['', {
         validators: [Validators.required, Validators.email],
       }],
+      telegram: ['', {}],
       details: new FormArray([]),
     });
   }
@@ -77,6 +78,7 @@ export class CreateClientDialogComponent implements OnInit {
       type: this.clientForm.value.type,
       phone: this.clientForm.value.phone,
       email: this.clientForm.value.email,
+      telegram: this.clientForm.value.telegram,
       details: this.details.value,
     };
 

@@ -8,5 +8,6 @@ export class Client {
   type?: string
   phone?: string
   email?: string
+  telegram?: string
   details?: []
 }

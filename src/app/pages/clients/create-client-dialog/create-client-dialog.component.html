@@ -41,6 +41,19 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field class="w-100">
+      <mat-label>Telegram</mat-label>
+      <input type="text" matInput formControlName="telegram"
+             placeholder="">
+      <mat-error
+        *ngIf="clientForm.controls['telegram'].hasError('telegram') && !clientForm.controls['telegram'].hasError('required')">
+        Укажите правильный telegram
+      </mat-error>
+      <mat-error *ngIf="clientForm.controls['telegram'].hasError('required')">
+        Поле обязательное
+      </mat-error>
+    </mat-form-field>
+
     <!-- Payments -->
     <mat-card>
       <mat-card-header>

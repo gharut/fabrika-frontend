@@ -44,7 +44,6 @@ export class ListComponent implements OnInit{
   fetchUserList(users: User[]) {
     this.users = users
     this.usersTable = new MatTableDataSource<UserWithDelete>(this.users)
-    console.log(this.usersTable.data)
   }
 
   canPerformAction(permission: string): boolean {

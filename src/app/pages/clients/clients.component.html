@@ -26,22 +26,30 @@
           <td mat-cell *matCellDef="let client"> {{client.phone}} </td>
         </ng-container>
 
-        <!-- Role column -->
+        <!-- Email column -->
         <ng-container matColumnDef="client-email">
-          <th mat-header-cell *matHeaderCellDef> Почта. </th>
+          <th mat-header-cell *matHeaderCellDef> Почта </th>
           <td mat-cell *matCellDef="let client"> {{client.email}} </td>
+        </ng-container>
+
+        <!-- Telegram column -->
+        <ng-container matColumnDef="client-telegram">
+          <th mat-header-cell *matHeaderCellDef> Телеграм </th>
+          <td mat-cell *matCellDef="let client"> {{client.telegram}} </td>
         </ng-container>
 
         <ng-container matColumnDef="client-details">
           <th mat-header-cell *matHeaderCellDef> </th>
           <td mat-cell *matCellDef="let client">
-            <div *ngIf="client.details && client.details.length>0" class="details-box">
-             {{client.details}}
-            </div>
+            <ng-container *ngIf="client.details && client.details.length">
+              <div *ngFor="let item of client.details">
+                {{ item.key }}: {{ item.value }}
+              </div>
+            </ng-container>
 
-            <div *ngIf="!client.details || client.details.length===0" class="details-box">
-              <p class="name">Нет данных</p>
-            </div>
+            <ng-container *ngIf="!client.details || !client.details.length">
+              Нет данных
+            </ng-container>
           </td>
 
         </ng-container>
@@ -59,8 +67,8 @@
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="['client-name','client-type', 'client-phone', 'client-email', 'client-details', 'client-actions']"></tr>
-        <tr mat-row *matRowDef="let row; columns: ['client-name','client-type', 'client-phone', 'client-email', 'client-details', 'client-actions'];"></tr>
+        <tr mat-header-row *matHeaderRowDef="['client-name','client-type', 'client-phone', 'client-email', 'client-telegram', 'client-details', 'client-actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['client-name','client-type', 'client-phone', 'client-email', 'client-telegram', 'client-details', 'client-actions'];"></tr>
       </table>
 
     </div>
