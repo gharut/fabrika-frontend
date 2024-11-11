@@ -18,6 +18,9 @@
     <mat-form-field class="w-100">
       <mat-label>Адрес</mat-label>
       <input matInput formControlName="address" placeholder="">
+      <mat-error *ngIf="supplierForm.controls['address'].hasError('serverError')">
+        {{ supplierForm.controls['address'].getError('serverError') }}
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field class="w-100">
