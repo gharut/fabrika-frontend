@@ -79,14 +79,13 @@ export class ListComponent implements OnInit{
   }
 
   applyFilter() {
-    console.log('this.selectedSteps:', this.selectedSteps)
     if (!this.selectedSteps.length) {
       this.servicesTable.data = this.services
       return
     }
 
     this.servicesTable.data = this.services.filter(service =>
-      this.selectedSteps.every(step => service.step === step)
+      this.selectedSteps.some(step => service.step === step)
     );
   }
 
