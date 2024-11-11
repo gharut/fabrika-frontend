@@ -1,4 +1,4 @@
-<div class="mb-3 text-right" *ngIf="canPerformAction('create-tags')">
+<div class="mt-3 mb-3 text-right" *ngIf="canPerformAction('create-tags')">
   <button mat-raised-button color="primary" (click)="openCreateTagDialog()">Новая категория</button>
 </div>
 <table mat-table [dataSource]="tableData" class="mat-elevation-z8 ">

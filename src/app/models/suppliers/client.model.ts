@@ -10,4 +10,12 @@ export class Client {
   email?: string
   telegram?: string
   details?: []
+  tin?: string
+  psrn?: string
+  account?: string
+  bank?: string
+  correspondent_account?: string
+  bic?: string
+  legal_address?: string
+  vat?: number
 }

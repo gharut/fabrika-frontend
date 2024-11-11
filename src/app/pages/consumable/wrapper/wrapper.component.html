@@ -5,9 +5,13 @@
       <h4 class="card-title">Расходные материалы</h4>
     </div>
     <div class="card-body">
-      <mat-tab-group>
-        <mat-tab label="Расходники"> <app-consumables></app-consumables> </mat-tab>
-        <mat-tab label="Категории"> <app-tags></app-tags> </mat-tab>
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+        <mat-tab label="Расходники">
+          <app-consumables></app-consumables>
+        </mat-tab>
+        <mat-tab label="Категории">
+          <app-tags></app-tags>
+        </mat-tab>
       </mat-tab-group>
     </div>
   </div>

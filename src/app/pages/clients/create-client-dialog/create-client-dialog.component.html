@@ -6,7 +6,7 @@
   <div mat-dialog-content>
     <mat-form-field class="w-100">
       <mat-label>Название</mat-label>
-      <input matInput formControlName="name" placeholder="" required>
+      <input matInput formControlName="name" required>
       <mat-error *ngIf="clientForm.controls['name'].hasError('required')">
         Поле обязательно
       </mat-error>
@@ -30,8 +30,7 @@
 
     <mat-form-field class="w-100">
       <mat-label>Email</mat-label>
-      <input type="email" matInput formControlName="email"
-             placeholder="">
+      <input type="email" matInput formControlName="email">
       <mat-error
         *ngIf="clientForm.controls['email'].hasError('email') && !clientForm.controls['email'].hasError('required')">
         Укажите правильный почтовой ящик
@@ -43,14 +42,85 @@
 
     <mat-form-field class="w-100">
       <mat-label>Telegram</mat-label>
-      <input type="text" matInput formControlName="telegram"
-             placeholder="">
+      <input type="text" matInput formControlName="telegram">
       <mat-error
         *ngIf="clientForm.controls['telegram'].hasError('telegram') && !clientForm.controls['telegram'].hasError('required')">
         Укажите правильный telegram
       </mat-error>
       <mat-error *ngIf="clientForm.controls['telegram'].hasError('required')">
         Поле обязательное
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>ИНН</mat-label>
+      <input type="text" matInput formControlName="tin">
+      <mat-error
+        *ngIf="clientForm.controls['tin'].hasError('tin') && !clientForm.controls['tin'].hasError('required')">
+        Укажите правильный ИНН
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>ОГРНИП</mat-label>
+      <input type="text" matInput formControlName="psrn">
+      <mat-error
+        *ngIf="clientForm.controls['psrn'].hasError('psrn') && !clientForm.controls['psrn'].hasError('required')">
+        Укажите правильный ОГРНИП
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Счет</mat-label>
+      <input type="text" matInput formControlName="account">
+      <mat-error
+        *ngIf="clientForm.controls['account'].hasError('account') && !clientForm.controls['account'].hasError('required')">
+        Укажите правильный Счет
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Банк</mat-label>
+      <input type="text" matInput formControlName="bank">
+      <mat-error
+        *ngIf="clientForm.controls['bank'].hasError('bank') && !clientForm.controls['bank'].hasError('required')">
+        Укажите правильный Банк
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Корр. счет</mat-label>
+      <input type="text" matInput formControlName="correspondent_account">
+      <mat-error
+        *ngIf="clientForm.controls['correspondent_account'].hasError('correspondent_account') && !clientForm.controls['correspondent_account'].hasError('required')">
+        Укажите правильный Корр. счет
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>БИК</mat-label>
+      <input type="text" matInput formControlName="bic">
+      <mat-error
+        *ngIf="clientForm.controls['bic'].hasError('bic') && !clientForm.controls['bic'].hasError('required')">
+        Укажите правильный БИК
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>Юридический адрес</mat-label>
+      <input type="text" matInput formControlName="legal_address">
+      <mat-error
+        *ngIf="clientForm.controls['legal_address'].hasError('legal_address') && !clientForm.controls['legal_address'].hasError('required')">
+        Укажите правильный Юридический адрес
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-label>НДС</mat-label>
+      <input type="number" step="any" matInput formControlName="vat">
+      <mat-error
+        *ngIf="clientForm.controls['vat'].hasError('vat') && !clientForm.controls['vat'].hasError('required')">
+        Укажите правильный НДС
       </mat-error>
     </mat-form-field>
 
@@ -65,11 +135,11 @@
             <mat-card-content>
               <mat-form-field class="w-100">
                 <mat-label>Свойство</mat-label>
-                <input matInput formControlName="key" placeholder="">
+                <input matInput formControlName="key">
               </mat-form-field>
               <mat-form-field class="w-100">
                 <mat-label>Значение</mat-label>
-                <input matInput formControlName="value" placeholder="">
+                <input matInput formControlName="value">
               </mat-form-field>
             </mat-card-content>
             <!-- Remove Contact Button -->
@@ -95,7 +165,7 @@
 
   </div>
   <div mat-dialog-actions>
-    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="warn" (click)="onCancel()">Отмена</button>
     <button mat-flat-button color="primary" [class.spinner]="formSubmitting" type="submit"
             [disabled]="clientForm.invalid || formSubmitting" (click)="onSubmit()">Сохранить
     </button>
