@@ -21,6 +21,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {WaitingsComponent} from "./waitings/waitings.component";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+
 
 
 @NgModule({
@@ -48,7 +51,9 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
     FormsModule,
     ReactiveFormsModule,
     MatCheckboxModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
 export class InoutModule { }

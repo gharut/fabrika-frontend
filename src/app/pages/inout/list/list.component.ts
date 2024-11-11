@@ -27,6 +27,7 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     'type-text',
     'type-consumable-name',
     'type-supplier',
+    'date',
     'qty',
     'price_per_unit',
     'total_price'
