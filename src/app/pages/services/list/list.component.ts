@@ -31,6 +31,9 @@ export class ListComponent implements OnInit{
   private services: Service[] = [];
   servicesTable: MatTableDataSource<ServiceWithDelete>;
 
+  availableSteps: string[] = [];
+  selectedSteps: string[] = [];
+
   constructor(
     private accountService: AccountService,
     private dialog: MatDialog,
@@ -44,7 +47,16 @@ export class ListComponent implements OnInit{
   ngOnInit(): void {
     this.servicesService.list().subscribe( services => {
       this.fetchServiceList(services);
+
+      const availableSteps = new Set<string>();
+      this.services.forEach(service => {
+        if (service.step) {
+          availableSteps.add(service.step);
+        }
+      });
+      this.availableSteps = Array.from(availableSteps);
     })
+
     this.tagService.list().subscribe( tags => {
       this.tags = tags
     })
@@ -53,6 +65,22 @@ export class ListComponent implements OnInit{
   fetchServiceList(services: Service[]) {
     this.services = services
     this.servicesTable = new MatTableDataSource<ServiceWithDelete>(this.services)
+  }
+
+  applyFilter() {
+    if (this.selectedSteps.length > 0) {
+      const filteredServices = this.services.filter(service =>
+        this.selectedSteps.every(step => service.step === String(step))
+      );
+      this.servicesTable.data = filteredServices;
+    } else {
+      this.servicesTable.data = this.services;
+    }
+  }
+
+  clearFilter() {
+    this.selectedSteps = [];
+    this.servicesTable.data = this.services;
   }
 
   canPerformAction(permission: string): boolean {

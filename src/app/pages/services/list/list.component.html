@@ -4,9 +4,17 @@
       <h4 class="card-title">Услуги</h4>
     </div>
     <div class="card-body">
-      <div class="mb-3 text-right" *ngIf="canPerformAction('create-tags')">
+      <div class="mb-3 text-right filters" *ngIf="canPerformAction('create-tags')">
         <button mat-raised-button color="primary" (click)="openOperation()">Добавить услугу</button>
         <button mat-raised-button color="primary" (click)="openDeliverySettings()">Настройки</button>
+        <mat-form-field>
+          <mat-select [(value)]="selectedSteps" multiple placeholder="Select Steps" (selectionChange)="applyFilter()">
+            <mat-option *ngFor="let step of availableSteps" [value]="step">
+              {{ step }}
+            </mat-option>
+            <button mat-raised-button color="primary" (click)="clearFilter()">Clear Filter</button>
+          </mat-select>
+        </mat-form-field>
       </div>
       <table mat-table [dataSource]="servicesTable" class="mat-elevation-z8 ">
         <!-- Name Column -->
