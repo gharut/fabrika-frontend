@@ -10,6 +10,9 @@
       <mat-error *ngIf="supplierForm.controls['name'].hasError('required')">
         Поле обязательно
       </mat-error>
+      <mat-error *ngIf="supplierForm.controls['name'].hasError('serverError')">
+        {{ supplierForm.controls['name'].getError('serverError') }}
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field class="w-100">
@@ -22,6 +25,9 @@
       <input matInput formControlName="website" placeholder="">
       <mat-error *ngIf="supplierForm.controls['website'].hasError('pattern')">
         Неверное значение (пр. https://google.com)
+      </mat-error>
+      <mat-error *ngIf="supplierForm.controls['website'].hasError('serverError')">
+        {{ supplierForm.controls['website'].getError('serverError') }}
       </mat-error>
     </mat-form-field>
 
