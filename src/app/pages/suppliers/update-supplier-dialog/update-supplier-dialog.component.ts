@@ -147,10 +147,22 @@ export class UpdateSupplierDialogComponent implements OnInit {
           this.dialogRef.close();
         }
       },
-      error: data => {
-        this.formSubmitting = false
-        this.toastrService.error("Поставщик не обнавлен!", "Произошла ошибка")
-        this.dialogRef.close();
+      error: (errorResponse) => {
+        this.formSubmitting = false;
+        this.toastrService.error("Поставщик не обновлен!", "Произошла ошибка");
+
+        // Capture backend validation errors
+        if (errorResponse?.data.errors) {
+          const backendErrors = errorResponse.data.errors;
+
+          // Iterate through errors and set them on the corresponding form controls
+          for (const [field, messages] of Object.entries(backendErrors)) {
+            const control = this.supplierForm.get(field);
+            if (control) {
+              control.setErrors({ serverError: (messages as string[]).join(', ') });
+            }
+          }
+        }
       }
     })
   }
