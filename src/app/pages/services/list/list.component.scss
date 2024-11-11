@@ -2,7 +2,11 @@
   width: 150px;
 }
 
-.filters {
+.body-header {
   display: flex;
   gap: 15px;
+}
+
+.filters {
+  margin-left: auto;
 }

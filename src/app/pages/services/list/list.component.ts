@@ -15,6 +15,7 @@ import {ConfirmDialogComponent} from "../../../components/confirm-dialog/confirm
 import {ToastrService} from "ngx-toastr";
 import {UpdateServiceDialogComponent} from "../update-service-dialog/update-service-dialog.component";
 import {DeliverySettingDialogComponent} from "../delivery-setting-dialog/delivery-setting-dialog.component";
+import {SERVICE_STEPS} from "../../../constants/service_steps";
 
 export class ServiceWithDelete extends Service {
   deletingProcess?: boolean = false
@@ -27,11 +28,13 @@ export class ServiceWithDelete extends Service {
 })
 export class ListComponent implements OnInit{
 
+  public serviceSteps: Array<{key: string, value: string}> = []
+  public allSelected: boolean = false
+
   private tags: Tag[] = [];
   private services: Service[] = [];
   servicesTable: MatTableDataSource<ServiceWithDelete>;
 
-  availableSteps: string[] = [];
   selectedSteps: string[] = [];
 
   constructor(
@@ -45,16 +48,12 @@ export class ListComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    Object.keys(SERVICE_STEPS).forEach(key => {
+      this.serviceSteps.push({ key, value: SERVICE_STEPS[key] });
+    })
+
     this.servicesService.list().subscribe( services => {
       this.fetchServiceList(services);
-
-      const availableSteps = new Set<string>();
-      this.services.forEach(service => {
-        if (service.step) {
-          availableSteps.add(service.step);
-        }
-      });
-      this.availableSteps = Array.from(availableSteps);
     })
 
     this.tagService.list().subscribe( tags => {
@@ -67,20 +66,28 @@ export class ListComponent implements OnInit{
     this.servicesTable = new MatTableDataSource<ServiceWithDelete>(this.services)
   }
 
-  applyFilter() {
-    if (this.selectedSteps.length > 0) {
-      const filteredServices = this.services.filter(service =>
-        this.selectedSteps.every(step => service.step === String(step))
-      );
-      this.servicesTable.data = filteredServices;
+  toggleAllSelection() {
+    this.allSelected = !this.allSelected
+
+    if (this.allSelected) {
+      this.selectedSteps = ['all', ...this.serviceSteps.map(item => item.key)]
     } else {
-      this.servicesTable.data = this.services;
+      this.selectedSteps = []
     }
+
+    this.applyFilter()
   }
 
-  clearFilter() {
-    this.selectedSteps = [];
-    this.servicesTable.data = this.services;
+  applyFilter() {
+    console.log('this.selectedSteps:', this.selectedSteps)
+    if (!this.selectedSteps.length) {
+      this.servicesTable.data = this.services
+      return
+    }
+
+    this.servicesTable.data = this.services.filter(service =>
+      this.selectedSteps.every(step => service.step === step)
+    );
   }
 
   canPerformAction(permission: string): boolean {
