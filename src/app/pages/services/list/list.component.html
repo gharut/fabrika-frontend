@@ -42,7 +42,7 @@
         <!-- Date Column -->
         <ng-container matColumnDef="service-user">
           <th mat-header-cell *matHeaderCellDef> Пользователь </th>
-          <td mat-cell *matCellDef="let service"> {{service.updater.name ? service.updater.name : service.creator.name}} </td>
+          <td mat-cell *matCellDef="let service"> {{service.updater?.name ? service.updater.name : service.creator?.name}} </td>
         </ng-container>
 
 
