@@ -70,6 +70,15 @@
 
       </div>
       <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Сортировка</mat-label>
+          <input matInput type="number" formControlName="sort">
+          <mat-error *ngIf="serviceForm.controls['sort'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="col-6">
         <mat-form-field *ngIf="serviceForm.controls['apply_to'].value == 'PRODUCT_COUNT' || serviceForm.controls['apply_to'].value == 'CUSTOM_COUNT'" class="w-100">
 
         <mat-label>Название поля количества</mat-label>
@@ -233,7 +242,7 @@
 
   </div>
   <div mat-dialog-actions>
-    <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+    <button mat-flat-button color="warn" (click)="onCancel()">Отмена</button>
   <button mat-flat-button color="primary" (click)="onSubmit()" [class.spinner]="formSubmitting" type="submit" [disabled]="serviceForm.invalid || formSubmitting">Сохранить</button>
   </div>
 </form>

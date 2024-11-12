@@ -89,6 +89,9 @@ export class UpdateServiceDialogComponent implements OnInit {
       price: [this.service.price, {
         validators: [Validators.required],
       }],
+      sort: [this.service.sort, {
+        validators: [Validators.required],
+      }],
       tags: [''],
       attributes: new FormArray([]),
     });
@@ -200,7 +203,7 @@ export class UpdateServiceDialogComponent implements OnInit {
         this.formSubmitting = false
         if(result.success) {
           this.toastrService.success("Категория успешно создана!","Изменения сохранены!")
-          //this.dialogRef.close(result.data);
+          this.dialogRef.close(result.data);
         }else{
           this.toastrService.error("Категория не создана!", "Произошла ошибка")
           //this.dialogRef.close();

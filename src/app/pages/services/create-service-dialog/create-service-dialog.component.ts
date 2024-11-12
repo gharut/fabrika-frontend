@@ -164,10 +164,10 @@ export class CreateServiceDialogComponent implements OnInit {
 
       next: result => {
         this.formSubmitting = false
-        if(result.success) {
+        if (result.success) {
           this.toastrService.success("Категория успешно создана!","Изменения сохранены!")
-          //this.dialogRef.close(result.data);
-        }else{
+          this.dialogRef.close(result.data);
+        } else {
           this.toastrService.error("Категория не создана!", "Произошла ошибка")
           //this.dialogRef.close();
         }

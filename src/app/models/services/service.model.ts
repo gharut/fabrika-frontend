@@ -10,6 +10,7 @@ export class Service {
   count_label?: any
   report_type?: string
   price?: number
+  sort?: number
   tags?: Tag[]
   attributes?: ServiceAttribute[]
 }
