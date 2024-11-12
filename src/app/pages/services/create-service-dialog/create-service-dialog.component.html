@@ -48,7 +48,6 @@
           <mat-label>Цена</mat-label>
           <input matInput type="number" formControlName="price">
         </mat-form-field>
-
       </div>
     </div>
 
@@ -65,6 +64,15 @@
           <mat-error *ngIf="serviceForm.controls['report_type'].hasError('required')">Поле обязательно</mat-error>
         </mat-form-field>
 
+      </div>
+      <div class="col-6">
+        <mat-form-field class="w-100">
+          <mat-label>Сортировка</mat-label>
+          <input matInput type="number" formControlName="sort">
+          <mat-error *ngIf="serviceForm.controls['sort'].hasError('required')">
+            Поле обязательно
+          </mat-error>
+        </mat-form-field>
       </div>
       <div class="col-6">
         <mat-form-field *ngIf="serviceForm.controls['apply_to'].value == 'PRODUCT_COUNT' || serviceForm.controls['apply_to'].value == 'CUSTOM_COUNT'" class="w-100">

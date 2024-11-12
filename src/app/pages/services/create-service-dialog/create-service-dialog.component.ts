@@ -86,6 +86,9 @@ export class CreateServiceDialogComponent implements OnInit {
       price: ['', {
         validators: [Validators.required],
       }],
+      sort: ['', {
+        validators: [Validators.required],
+      }],
       tags: [''],
       attributes: new FormArray([]),
     });
