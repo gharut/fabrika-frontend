@@ -16,6 +16,7 @@ import {CLIENT_TYPES} from "../../../constants/client_types";
 
 export class UpdateClientDialogComponent implements OnInit {
   clientForm!: FormGroup;
+  client: Client;
 
   formSubmitting: boolean = false;
   readonly CLIENT_TYPES = CLIENT_TYPES;
@@ -27,26 +28,36 @@ export class UpdateClientDialogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private toastrService: ToastrService,
     private clientService: ClientService,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: Client
   ) {
-
+    this.client = data
   }
 
   ngOnInit() {
     this.clientForm = this.formBuilder.group({
-      name: ['', {
+      name: [this.client.name, {
         validators: [Validators.required],
       }],
-      type: ['', {
+      type: [this.client.type, {
         validators: [Validators.required],
       }],
-      phone: ['', {
+      phone: [this.client.phone, {
         validators: [Validators.required],
       }],
-      email: ['', {
+      email: [this.client.email, {
         validators: [Validators.required, Validators.email],
       }],
-      telegram: ['', {}],
+      telegram: [this.client.telegram, {validators: []}],
+      tin: [this.client.tin, {validators: []}],
+      psrn: [this.client.psrn, {validators: []}],
+      account: [this.client.account, {validators: []}],
+      bank: [this.client.bank, {validators: []}],
+      correspondent_account: [this.client.correspondent_account, {validators: []}],
+      bic: [this.client.bic, {validators: []}],
+      legal_address: [this.client.legal_address, {validators: []}],
+      vat: [this.client.vat, {
+        validators: [Validators.min(0), Validators.max(100)],
+      }],
       details: new FormArray([]),
     });
   }
@@ -74,11 +85,20 @@ export class UpdateClientDialogComponent implements OnInit {
     }
 
     const client: Client = {
+      id: this.client.id,
       name: this.clientForm.value.name,
       type: this.clientForm.value.type,
       phone: this.clientForm.value.phone,
       email: this.clientForm.value.email,
       telegram: this.clientForm.value.telegram,
+      tin: this.clientForm.value.tin,
+      psrn: this.clientForm.value.psrn,
+      account: this.clientForm.value.account,
+      bank: this.clientForm.value.bank,
+      correspondent_account: this.clientForm.value.correspondent_account,
+      bic: this.clientForm.value.bic,
+      legal_address: this.clientForm.value.legal_address,
+      vat: this.clientForm.value.vat,
       details: this.details.value,
     };
 
@@ -92,13 +112,13 @@ export class UpdateClientDialogComponent implements OnInit {
           this.dialogRef.close(result.data);
         }else{
           this.toastrService.error("Клиент не изменен!", "Произошла ошибка")
-          this.dialogRef.close();
+          //this.dialogRef.close();
         }
       },
       error: data => {
         this.formSubmitting = false
         this.toastrService.error("Клиент не изменен!", "Произошла ошибка")
-        this.dialogRef.close();
+        //this.dialogRef.close();
       }
     })
   }
