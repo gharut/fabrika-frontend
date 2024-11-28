@@ -51,7 +51,6 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import {ResetPasswordComponent} from "./pages/reset-password/reset-password.component";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
-import { BasicPaginationComponent } from './components/basic-pagination/basic-pagination.component';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTooltipModule} from "@angular/material/tooltip";
 
@@ -62,7 +61,14 @@ const APP_CONTAINERS = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, ...APP_CONTAINERS, LoginComponent, ResetPasswordComponent, ImageResizerComponent, ConfirmDialogComponent],
+  declarations: [
+    AppComponent,
+    ...APP_CONTAINERS,
+    LoginComponent,
+    ResetPasswordComponent,
+    ImageResizerComponent,
+    ConfirmDialogComponent,
+  ],
   imports: [
     HttpClientModule,
     BrowserModule,
@@ -105,13 +111,13 @@ const APP_CONTAINERS = [
     MatFormFieldModule,
     MatInputModule,
     MatToolbarModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   providers: [
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    },
+    // {
+    //   provide: LocationStrategy,
+    //   useClass: HashLocationStrategy
+    // },
     {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     IconSetService,
@@ -120,9 +126,6 @@ const APP_CONTAINERS = [
       provide: MatDialogRef,
       useValue: {}
     }
-  ],
-  exports: [
-
   ],
   bootstrap: [AppComponent]
 })

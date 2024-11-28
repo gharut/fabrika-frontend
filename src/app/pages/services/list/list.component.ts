@@ -120,7 +120,6 @@ export class ListComponent implements OnInit{
           this.services[index] = service;
           this.servicesTable = new MatTableDataSource<ServiceWithDelete>(this.services)
         }
-
       }
     });
   }

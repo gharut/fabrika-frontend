@@ -35,8 +35,8 @@ export class OrdersService {
     return this.http.put<{ success: boolean; data: OrderListItem}>(`${this.apiUrl}/${id}/status`, {attribute: attribute, value: value});
   }
 
-  getCalculation(id: number): Observable<{ success: boolean; data: Calculation}> {
-    return this.http.get<{ success: boolean; data: Calculation}>(`${this.apiUrl}/calculate/${id}`).pipe(
+  getCalculation(uuid: string): Observable<{ success: boolean; data: Calculation}> {
+    return this.http.get<{ success: boolean; data: Calculation}>(`${this.apiUrl}/calculate/${uuid}`).pipe(
       map(response => response)
     );
   }

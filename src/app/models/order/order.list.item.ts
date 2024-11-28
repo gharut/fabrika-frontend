@@ -2,6 +2,7 @@ import {OrderSize} from "./orderData.model";
 
 export interface OrderListItem {
   id: number,
+  uuid: string,
   client_id: number,
   supply_date: string,
   supply_time: string,

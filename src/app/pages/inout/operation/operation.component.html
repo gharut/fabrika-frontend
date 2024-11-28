@@ -32,16 +32,16 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field class="w-100">
+    <!--<mat-form-field class="w-100">
       <mat-label>Дата</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="supply_date">
+      <input matInput [matDatepicker]="picker" formControlName="delivery_date">
       <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
 
-      <!-- <mat-error *ngIf="operationForm.controls['supply_date'].hasError('required')">
+       <mat-error *ngIf="operationForm.controls['supply_date'].hasError('required')">
         Поле обязательно
-      </mat-error> -->
-    </mat-form-field>
+      </mat-error>
+    </mat-form-field>-->
 
     <mat-form-field class="" *ngIf="operationForm.controls['type'].value == 1">
       <mat-label>Поставщик</mat-label>
@@ -116,7 +116,7 @@
 
 
     <div mat-dialog-actions>
-      <button mat-flat-button color="danger" (click)="onCancel()">Отмена</button>
+      <button mat-flat-button color="warn" (click)="onCancel()">Отмена</button>
       <button mat-flat-button color="primary" [class.spinner]="formSubmitting" (click)="onSubmit()" type="submit"
               [disabled]=" formSubmitting">Сохранить
       </button>

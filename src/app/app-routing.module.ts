@@ -8,6 +8,7 @@ import { LoginComponent} from "./views/login/login.component";
 import { RegisterComponent } from './views/pages/register/register.component';
 import {AuthGuard} from "./guards/auth.guard";
 import {ResetPasswordComponent} from "./pages/reset-password/reset-password.component";
+import { PageInvoiceComponent } from "./pages/invoice/invoice.component";
 
 const routes: Routes = [
   {
@@ -15,26 +16,19 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
-  // {
-  //   path: '404',
-  //   component: P404Component,
-  //   data: {
-  //     title: 'Page 404',
-  //   },
-  // },
-  // {
-  //   path: '500',
-  //   component: P500Component,
-  //   data: {
-  //     title: 'Page 500',
-  //   },
-  // },
   {
     path: 'login',
     component: LoginComponent,
     data: {
-      title: 'Login Page',
-    },
+      title: 'Login Page'
+    }
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    data: {
+      title: 'Register Page'
+    }
   },
   {
     path: 'reset-password/:token',
@@ -44,10 +38,10 @@ const routes: Routes = [
     },
   },
   {
-    path: 'register',
-    component: RegisterComponent,
+    path: 'invoice/:uuid',
+    component: PageInvoiceComponent,
     data: {
-      title: 'Register Page',
+      title: 'Order Invoice Page',
     },
   },
   {
@@ -191,20 +185,9 @@ const routes: Routes = [
     }
   },
   {
-    path: 'login',
-    component: LoginComponent,
-    data: {
-      title: 'Login Page'
-    }
-  },
-  {
-    path: 'register',
-    component: RegisterComponent,
-    data: {
-      title: 'Register Page'
-    }
-  },
-  {path: '**', redirectTo: 'dashboard'}
+    path: '**',
+    redirectTo: 'dashboard'
+  }
 ];
 
 @NgModule({

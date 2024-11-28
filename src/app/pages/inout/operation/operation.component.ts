@@ -45,7 +45,7 @@ export class OperationComponent implements OnInit {
   readonly CONSUMABLE_OPERATION_TYPES = CONSUMABLE_OPERATION_TYPES
   type: any = ''
   consumable_id: any = ''
-  date: any = ''
+  // delivery_date: any = ''
 
   @ViewChild('tagsInput') tagsInput!: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete!: MatAutocomplete;
@@ -86,9 +86,9 @@ export class OperationComponent implements OnInit {
       supplier_id: ['', {
         validators: [],
       }],
-      date: [this.date, {
-        validators: [Validators.required],
-      }],
+      // delivery_date: [this.delivery_date, {
+      //   validators: [Validators.required],
+      // }],
       qty: ['', {
         validators: [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1)],
       }],

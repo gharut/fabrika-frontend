@@ -22,7 +22,7 @@ import {
   CreateConsumableDialogComponent
 } from "../../consumable/consumables/create-consumable-dialog/create-consumable-dialog.component";
 import {ConsumableWithDeleting} from "../../consumable/consumables/consumables.component";
-import {CalculationSheetDialogComponent} from "../calculation-sheet-dialog/calculation-sheet-dialog.component";
+import {InvoiceDialogComponent} from "../../../components/invoice-dialog/invoice-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 
 
@@ -623,11 +623,9 @@ export class OrderItemComponent implements OnInit{
     return count
   }
 
-  openCalculationDialog(id: number) {
-    const dialogRef = this.dialog.open(CalculationSheetDialogComponent, {
-      data: {
-        id: id,
-      },
+  openCalculationDialog(uuid: string) {
+    const dialogRef = this.dialog.open(InvoiceDialogComponent, {
+      data: { uuid },
       width: '780px'
     });
   }

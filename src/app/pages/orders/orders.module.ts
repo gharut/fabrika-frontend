@@ -56,7 +56,8 @@ import {IconComponent} from "@coreui/icons-angular";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {MatMenuModule} from "@angular/material/menu";
-import { CalculationSheetDialogComponent } from './calculation-sheet-dialog/calculation-sheet-dialog.component';
+import {PagesModule} from "../../views/pages/pages.module";
+import { SharedModule } from "../../shared/shared.module";
 
 
 @NgModule({
@@ -65,7 +66,6 @@ import { CalculationSheetDialogComponent } from './calculation-sheet-dialog/calc
     OrdersComponent,
     CreateOrderComponent,
     OrderItemComponent,
-    CalculationSheetDialogComponent
   ],
   imports: [
     CommonModule,
@@ -124,6 +124,8 @@ import { CalculationSheetDialogComponent } from './calculation-sheet-dialog/calc
     CardTextDirective,
     ButtonDirective,
     MatMenuModule,
+    PagesModule,
+    SharedModule,
   ],
   providers: [
     provideNgxMask()
