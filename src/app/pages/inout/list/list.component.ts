@@ -27,10 +27,11 @@ export class ListComponent implements OnInit, AfterViewInit, OnDestroy {
     'type-text',
     'type-consumable-name',
     'type-supplier',
-    'date',
     'qty',
     'price_per_unit',
-    'total_price'
+    'total_price',
+    'created_at',
+    'delivery_date'
   ];
   dataSource?: MatTableDataSource<any>; // mat table data source
   // for pagination

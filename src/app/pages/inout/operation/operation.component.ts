@@ -20,15 +20,14 @@ import {SupplierService} from "../../../services/supplier.service";
 import {Supplier} from "../../../models/suppliers/supplier.model";
 import {CONSUMABLE_OPERATION_TYPES} from "../../../constants/consumable_operation_types";
 import {InoutService} from "../../../services/inout.service";
-
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-make-operation-dialog',
   styleUrls: ['./operation.component.scss'],
   templateUrl: './operation.component.html',
-  providers: [CheckboxControlValueAccessor]
+  providers: [ CheckboxControlValueAccessor, DatePipe ]
 })
-
 
 export class OperationComponent implements OnInit {
   operationForm!: FormGroup;
@@ -45,7 +44,7 @@ export class OperationComponent implements OnInit {
   readonly CONSUMABLE_OPERATION_TYPES = CONSUMABLE_OPERATION_TYPES
   type: any = ''
   consumable_id: any = ''
-  // delivery_date: any = ''
+  delivery_date: any = ''
 
   @ViewChild('tagsInput') tagsInput!: ElementRef<HTMLInputElement>;
   @ViewChild('auto') matAutocomplete!: MatAutocomplete;
@@ -57,6 +56,7 @@ export class OperationComponent implements OnInit {
     private consumableService: ConsumablesService,
     private supplierService: SupplierService,
     private inoutService: InoutService,
+    private datePipe: DatePipe,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.consumableService.list().subscribe(consumables => {
@@ -66,10 +66,8 @@ export class OperationComponent implements OnInit {
     this.supplierService.list().subscribe(suppliers => {
       this.suppliers = suppliers;
     })
-    console.log(data)
     this.type = data && data.hasOwnProperty('type') ? data.type : ''
     this.consumable_id = data && data.hasOwnProperty('consumable_id') ? data.consumable_id : ''
-
   }
 
   ngOnInit() {
@@ -86,9 +84,9 @@ export class OperationComponent implements OnInit {
       supplier_id: ['', {
         validators: [],
       }],
-      // delivery_date: [this.delivery_date, {
-      //   validators: [Validators.required],
-      // }],
+      delivery_date: [this.delivery_date, {
+        validators: [Validators.required],
+      }],
       qty: ['', {
         validators: [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1)],
       }],
@@ -146,6 +144,7 @@ export class OperationComponent implements OnInit {
       return;
     }
 
+    this.operationForm.value.delivery_date = this.datePipe.transform(this.operationForm.value.delivery_date, 'yyyy-MM-dd HH:mm:ss')
 
     this.formSubmitting = true
     this.inoutService.inout(this.operationForm.controls['consumable_id'].value, JSON.stringify(this.operationForm.value)).subscribe({

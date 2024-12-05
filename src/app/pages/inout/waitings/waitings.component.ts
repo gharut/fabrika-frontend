@@ -40,6 +40,8 @@ export class WaitingsComponent implements OnInit{
     'qty',
     'price_per_unit',
     'total_price',
+    'created_at',
+    'delivery_date',
     'delivery',
     'paid',
   ];

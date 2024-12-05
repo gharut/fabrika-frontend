@@ -5,64 +5,13 @@
   <mat-card-content>
     <div class="row">
       <div class="col-12">Заказ Но: {{order.id}}
-        <button mat-icon-button [matMenuTriggerFor]="deliveryMenu" aria-label="Example icon-button with a menu" class="float-end">
-          <mat-icon>more_vert</mat-icon>
+        <button mat-icon-button (click)="openCalculationDialog(order.uuid)" class="float-end">
+          <mat-icon>info</mat-icon>
         </button>
-        <mat-menu #deliveryMenu="matMenu">
-          <button mat-menu-item (click)="openCalculationDialog(order.uuid)">
-            <mat-icon>text_ad</mat-icon>
-            <span>Посмтреть счет</span>
-          </button>
-        </mat-menu>
       </div>
 
     </div>
 
-    <c-row>
-      <c-col [lg]="3">
-        <c-card [color]="order.delivery_status == 0 ? 'danger' : 'success'"
-                textColor="white"
-                class="mb-3">
-          <c-card-header *ngIf="order.delivery_status == 0; else isDelivered">
-            <div class="float-start" style="line-height: 50px">Не Доставлен</div>
-            <button mat-icon-button [matMenuTriggerFor]="deliveryMenu" aria-label="Example icon-button with a menu" class="float-end">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #deliveryMenu="matMenu">
-              <button mat-menu-item (click)="updateStatus('delivery_status', 1)">
-                <mat-icon>local_shipping</mat-icon>
-                <span >Доставлен</span>
-              </button>
-            </mat-menu>
-          </c-card-header>
-          <ng-template #isDelivered>
-            <c-card-header style="line-height: 50px">Доставлен</c-card-header>
-          </ng-template>
-        </c-card>
-      </c-col>
-
-      <c-col [lg]="3">
-        <c-card [color]="order.payment_status == 0 ? 'danger' : 'success'"
-                textColor="white"
-                class="mb-3">
-          <c-card-header *ngIf="order.payment_status == 0; else isPaid">
-            <div class="float-start" style="line-height: 50px">Не оплачен</div>
-            <button mat-icon-button [matMenuTriggerFor]="paymentMenu"  class="float-end">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #paymentMenu="matMenu">
-            <button mat-menu-item (click)="updateStatus('payment_status', 1)">
-                <mat-icon>paid</mat-icon>
-                <span>Оплачен</span>
-              </button>
-            </mat-menu>
-          </c-card-header>
-          <ng-template #isPaid>
-            <c-card-header style="line-height: 50px">Оплачено</c-card-header>
-          </ng-template>
-        </c-card>
-      </c-col>
-    </c-row>
     <div class="row">
       <div class="col-lg-4 col-md-5 col-sm-12">
         <c-card class="h-100" (load)="packagingEdit">

@@ -30,6 +30,7 @@ import {StepperSelectionEvent} from "@angular/cdk/stepper";
 import {DeliveryLimits} from "../../../models/settings/deliveryLimits.model";
 import {SettingsService} from "../../../services/settings.service";
 import {OrdersService} from "../../../services/orders.service";
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -110,10 +111,11 @@ export class CreateOrderComponent implements OnInit {
     private servicesService: ServicesService,
     private attributeService: AttributeService,
     private consumablesService: ConsumablesService,
-    private toastrService: ToastrService,
+    private toastr: ToastrService,
     private settingsService: SettingsService,
     private orderService: OrdersService,
     private dialog: MatDialog,
+    private router: Router
   ) {
     this.clientService.list().subscribe((clients: Client[]) => {
       this.clients = clients
@@ -163,10 +165,8 @@ export class CreateOrderComponent implements OnInit {
         services: new FormArray([])
       }),
 
-
       packaging: new FormArray([]),
     });
-
 
     this.servicesService.list().subscribe((services: Service[]) => {
       this.services = services
@@ -181,7 +181,7 @@ export class CreateOrderComponent implements OnInit {
       this.orderFormData = formData;
     });
 
-
+    this.addNewSupplyItem();
   }
 
   getRealElementCount(array: FormArray) {
@@ -320,12 +320,26 @@ export class CreateOrderComponent implements OnInit {
 
   toggleDelivery(event: MatCheckboxChange) {
     let enabled = !event.checked
+
     this.getDeliveryServiceForm()!.get('service_enabled')?.setValue(enabled)
     this.getDeliveryServiceForm()!.get('service_attribute')?.setValidators([])
     this.getDeliveryServiceForm().updateValueAndValidity()
-    if (event.checked) {
-      (this.getPickupFormGroup.get('supply_items') as FormArray).clear()
-    }
+
+    this.supplyItems.controls.forEach((item: any) => {
+      Object.keys(item.controls).forEach((key) => {
+        if (enabled) {
+          item.controls[key].setValidators(Validators.required);
+        } else {
+          item.controls[key].clearValidators();
+        }
+
+        item.controls[key].updateValueAndValidity();
+      })
+    })
+
+    setTimeout(() => {
+      this.supplyItems.updateValueAndValidity();
+    });
   }
 
   addSizeToProductChild(i: number, ic: number) {
@@ -491,7 +505,7 @@ export class CreateOrderComponent implements OnInit {
   }
 
   getTotalSupplyItemsData(): DeliveryItems|null {
-    if(this.orderFormData.pickup.supply_items.length == 0) {
+    if(this.orderFormData.pickup.supply_items?.length == 0) {
       return null
     }
 
@@ -503,7 +517,7 @@ export class CreateOrderComponent implements OnInit {
       weight_price: 0,
       total_price: 0,
     }
-    this.orderFormData.pickup.supply_items.forEach(item => {
+    this.orderFormData.pickup.supply_items?.forEach(item => {
       let items_total_volume = parseInt(item.length)*parseInt(item.height)*parseInt(item.width)*parseInt(item.qty)
       if(item.unit == "cm") {
         items_total_volume = Math.round(items_total_volume/1000)
@@ -682,19 +696,20 @@ export class CreateOrderComponent implements OnInit {
       return
     }
 
-    this.orderService.createOrder(this.orderFormData).subscribe({
+    if (!this.getDeliveryServiceForm()?.get('service_enabled')?.value) {
+      this.orderFormData.pickup.supply_items = []
+    }
 
-      next: result => {
-        console.log(result)
+    this.orderService.createOrder(this.orderFormData).subscribe({
+      next: (result: any) => {
+        this.toastr.success("Заказ успешно создан.")
+        this.router.navigate(['/orders/view', result.data.id]);
       },
       error: data => {
-        console.log(data)
+        console.error(data)
       }
     })
-
-
   }
-
 
   protected readonly FormGroup = FormGroup;
 }

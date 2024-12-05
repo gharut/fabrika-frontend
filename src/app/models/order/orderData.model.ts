@@ -6,8 +6,8 @@ export interface OrderData {
     products: OrderProduct[]
     supply_date: string,
     supply_time: string,
-    supply_items: SupplyItem[]
-    supply_details: {
+    supply_items?: SupplyItem[]
+    supply_details?: {
       name: string,
       phone: string,
       load_number: string,

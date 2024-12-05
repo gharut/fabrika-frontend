@@ -23,7 +23,7 @@
         <!-- ----------------------------------PICKUP FORM ---------------------------------- -->
         <mat-step [stepControl]="getPickupFormGroup" formGroupName="pickup">
           <ng-template matStepLabel>Забор груза</ng-template>
-          <mat-card class="mb-1">
+          <mat-card class="mb-3">
             <mat-card-header>Сроки</mat-card-header>
             <mat-card-content>
               <div class="d-flex bd-highlight mb-3">
@@ -51,7 +51,7 @@
           </mat-card>
 
 
-          <mat-card class="mb-1" formArrayName="products">
+          <mat-card class="mb-3" formArrayName="products">
             <mat-card-header>
               <div class="d-flex bd-highlight w-100">
                 <div class="p-2 w-100 bd-highlight">Товары</div>
@@ -86,10 +86,22 @@
                         </button>
                       </mat-form-field>
                     </div>
-                    <div class="p-2 bd-highlight w-100" formArrayName="size">
+                    <div class="bd-highlight w-100" formArrayName="size">
                       <div class="d-flex bd-highlight m-0" *ngFor="let size of sizesArray(i).controls; let is = index"
                            [formGroupName]="is">
-                        <div class="p-0 bd-highlight">
+                        <div class="p-2 bd-highlight">
+                          <mat-form-field class="col-12">
+                            <mat-label>Количество</mat-label>
+                            <input matInput formControlName="qty" type="number">
+                          </mat-form-field>
+                        </div>
+                        <div class="p-0 bd-highlight" *ngIf="is != 0">
+                          <button mat-icon-button color="warn" (click)="removeSizeFromProduct(i, is)">
+                            <mat-icon>remove</mat-icon>
+                          </button>
+                        </div>
+
+                        <div class="p-2 bd-highlight">
                           <mat-form-field class="col-12">
                             <mat-label>Размер</mat-label>
                             <input matInput formControlName="size">
@@ -100,17 +112,6 @@
                               </mat-icon>
                             </button>
                           </mat-form-field>
-                        </div>
-                        <div class="p-0 bd-highlight">
-                          <mat-form-field class="col-12">
-                            <mat-label>Количество</mat-label>
-                            <input matInput formControlName="qty" type="number">
-                          </mat-form-field>
-                        </div>
-                        <div class="p-0 bd-highlight" *ngIf="is != 0">
-                          <button mat-icon-button color="warn" (click)="removeSizeFromProduct(i, is)">
-                            <mat-icon>remove</mat-icon>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -183,7 +184,7 @@
           </mat-card>
 
 
-          <mat-card>
+          <mat-card class="mb-3">
             <mat-card-header>
               <div class="d-flex bd-highlight w-100">
                 <div class="p-2 w-100 bd-highlight">Доставка</div>
@@ -193,7 +194,7 @@
               </div>
             </mat-card-header>
             <mat-card-content>
-              <div formArrayName="supply_items" class="mb-2">
+              <div formArrayName="supply_items" class="mb-2" *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
                 <div *ngFor="let supplyItem of supplyItems.controls; let it = index" [formGroupName]="it">
                   <div class="d-flex bd-highlight m-0">
                     <div class="p-2 bd-highlight">
@@ -238,14 +239,14 @@
                       </mat-form-field>
                     </div>
                     <div class="p-2 bd-highlight">
-                      <button mat-icon-button color="warn" (click)="removeSupplyItem(it)">
+                      <button *ngIf="supplyItems.length > 1" mat-icon-button color="warn" (click)="removeSupplyItem(it)">
                         <mat-icon>remove</mat-icon>
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <button mat-raised-button color="primary" (click)="addNewSupplyItem()">
+                <button class="mb-4" mat-raised-button color="primary" (click)="addNewSupplyItem()">
                   <mat-icon>add</mat-icon>
                   Добавить груз
                 </button>
@@ -303,7 +304,7 @@
                 </div>
               </div>
 
-              <div formArrayName="services">
+              <div formArrayName="services" *ngIf="getDeliveryServiceForm()?.get('service_enabled')?.value == true">
                 <div *ngFor="let orderService of pickupService.controls; let i = index" [formGroupName]="i">
                   <div
                     *ngIf="orderService.get('service_id')!.value != dsId && serviceById(orderService.get('service_id')!.value)?.step == 'PREPROCESSING'">
@@ -430,6 +431,9 @@
           </div>
         </mat-step>
         <!-- ----------------------------END PACKAGING FORM ---------------------------------- -->
+
+
+
         <mat-step>
           <ng-template matStepLabel>Done</ng-template>
           <div *ngIf="orderForm.valid">
