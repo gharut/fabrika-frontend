@@ -111,6 +111,14 @@ const routes: Routes = [
         }
       },
       {
+        path: 'warehouses',
+        loadChildren: () =>
+          import('./pages/warehouses/warehouses.module').then((m) => m.WarehousesModule),
+        data: {
+          permission: 'list-warehouses'
+        }
+      },
+      {
         path: 'orders',
         loadChildren: () =>
           import('./pages/orders/orders.module').then((m) => m.OrdersModule),

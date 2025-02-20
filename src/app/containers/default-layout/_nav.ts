@@ -62,6 +62,12 @@ export const navItems: ICustomNavData[] = [
     can: 'list-clients'
   },
   {
+    name: 'Склады',
+    url: '/warehouses',
+    icon: 'fa fa-folder',
+    can: 'list-warehouses'
+  },
+  {
     name: 'Заказы',
     url: '/orders',
     icon: 'fa fa-calculator',

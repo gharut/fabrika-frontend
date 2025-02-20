@@ -1,0 +1,144 @@
+<form [formGroup]="formData">
+  <div mat-dialog-title>
+    <h3>
+      Изменить Склад
+    </h3>
+  </div>
+  <div mat-dialog-content>
+    <!-- Name -->
+    <mat-form-field class="w-100">
+      <mat-label>
+        Склад
+      </mat-label>
+      <input matInput formControlName="name" required>
+      <mat-error *ngIf="formData.controls['name'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Shipping type -->
+    <mat-form-field class="w-100">
+      <mat-label>Тип отгрузки</mat-label>
+      <mat-select #type formControlName="shipping_type" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let item of WAREHOUSE_SHIPPING_TYPES | keyvalue" [value]="item.key">
+          {{item.value}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formData.controls['shipping_type'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Consumable -->
+    <mat-form-field class="w-100">
+      <mat-label>Расходник</mat-label>
+      <mat-select #type formControlName="consumable_id" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let item of data.selections.consumableSelection" [value]="item.value">
+          {{item.key}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formData.controls['consumable_id'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Supplier -->
+    <mat-form-field class="w-100">
+      <mat-label>Поставщик</mat-label>
+      <mat-select #type formControlName="supplier_id" required>
+        <mat-option></mat-option>
+        <mat-option *ngFor="let item of data.selections.supplierSelection" [value]="item.value">
+          {{item.key}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="formData.controls['supplier_id'].hasError('required')">
+        Поле обязательно
+      </mat-error>
+    </mat-form-field>
+
+    <h5>Цены</h5>
+    <!-- Prices -->
+    <div class="prices" formArrayName="prices">
+      <div class="price" *ngFor="let item of prices.controls; let i = index" [formGroupName]="i">
+        <div class="row">
+          <!-- Начиная с -->
+          <div class="col">
+            <mat-form-field class="w-100">
+              <mat-label>
+                Начиная с
+              </mat-label>
+              <input matInput formControlName="min_quantity" required>
+              <mat-error *ngIf="item.get('min_quantity')?.hasError('required') && item.get('min_quantity')?.touched">
+                Поле обязательно
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- До -->
+          <div class="col">
+            <mat-form-field class="w-100">
+              <mat-label>
+                До
+              </mat-label>
+              <input matInput formControlName="max_quantity" required>
+              <mat-error *ngIf="item.get('min_quantity')?.hasError('required') && item.get('min_quantity')?.touched">
+                Поле обязательно
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Цена -->
+          <div class="col">
+            <mat-form-field class="w-100">
+              <mat-label>
+                Цена
+              </mat-label>
+              <input matInput formControlName="price" required>
+              <mat-error *ngIf="item.get('min_quantity')?.hasError('required') && item.get('min_quantity')?.touched">
+                Поле обязательно
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Себестоимость -->
+          <div class="col">
+            <mat-form-field class="w-100">
+              <mat-label>
+                Себестоимость
+              </mat-label>
+              <input matInput formControlName="cost_price" required>
+              <mat-error *ngIf="item.get('min_quantity')?.hasError('required') && item.get('min_quantity')?.touched">
+                Поле обязательно
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <button mat-icon-button color="warn" (click)="removePrice(i)">
+          <mat-icon>remove</mat-icon>
+        </button>
+      </div>
+
+      <button mat-raised-button color="primary" (click)="addPrice()">
+        <mat-icon>add</mat-icon>
+        Добавить еще
+      </button>
+    </div>
+  </div>
+
+  <div mat-dialog-actions>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="onCancel()"
+    >
+      Отмена
+    </button>
+    <button mat-flat-button color="primary" [class.spinner]="formSubmitting" type="submit"
+            [disabled]="formData.invalid || formSubmitting" (click)="onSubmit()">Сохранить
+    </button>
+  </div>
+</form>
+

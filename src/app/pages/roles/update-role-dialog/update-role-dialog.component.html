@@ -37,7 +37,7 @@
     </div>
   </div>
   <div mat-dialog-actions>
-    <button mat-flat-button color="danger" (click)="onCancel()" [disabled]="formSubmitting">Отмена</button>
+    <button mat-flat-button color="warn" (click)="onCancel()" [disabled]="formSubmitting">Отмена</button>
     <button mat-flat-button color="primary"  [class.spinner]="formSubmitting" [disabled]="formSubmitting" type="submit" [disabled]="roleForm.invalid">Сохранить</button>
   </div>
 </form>

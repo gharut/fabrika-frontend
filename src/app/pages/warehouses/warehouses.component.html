@@ -1,0 +1,64 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title">
+        Склады
+      </h4>
+    </div>
+    <div class="card-body">
+      <div class="mb-3 text-right" *ngIf="canPerformAction('create-warehouses')">
+        <button mat-raised-button color="primary" (click)="openCreateWarehouseDialog()">Новый склад</button>
+      </div>
+      <table mat-table [dataSource]="warehouseTable" class="mat-elevation-z8 ">
+        <!-- Склад -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Склад </th>
+          <td mat-cell *matCellDef="let warehouse"> {{warehouse.name}} </td>
+        </ng-container>
+
+        <!-- Тип отгрузки -->
+        <ng-container matColumnDef="shipping-type">
+          <th mat-header-cell *matHeaderCellDef> Тип отгрузки </th>
+          <td mat-cell *matCellDef="let warehouse"> {{warehouse.shipping_type}} </td>
+        </ng-container>
+
+        <!-- Расходник -->
+        <ng-container matColumnDef="consumable">
+          <th mat-header-cell *matHeaderCellDef> Расходник </th>
+          <td mat-cell *matCellDef="let warehouse"> {{warehouse.consumable.size}} </td>
+        </ng-container>
+
+        <!-- Цена -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef> Цена </th>
+          <td mat-cell *matCellDef="let warehouse"> {{warehouse.prices[0].price}} </td>
+        </ng-container>
+
+        <!-- Себес -->
+        <ng-container matColumnDef="cost-price">
+          <th mat-header-cell *matHeaderCellDef> Себес </th>
+          <td mat-cell *matCellDef="let warehouse"> {{warehouse.prices[0].cost_price}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> </th>
+          <td mat-cell *matCellDef="let warehouse" style="text-align: right">
+            <button mat-icon-button color="primary" (click)="openUpdateWarehouseDialog(warehouse)" *ngIf="canPerformAction('edit-warehouses')">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" [class.spinner]="warehouse.deletingProcess" [disabled]="warehouse.deletingProcess" (click)="openDeleteWarehouseDialog(warehouse)" *ngIf="canPerformAction('delete-warehouses')">
+              <mat-icon>delete</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['name', 'shipping-type', 'consumable', 'price', 'cost-price', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'shipping-type', 'consumable', 'price', 'cost-price', 'actions'];"></tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+
